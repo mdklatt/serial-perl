@@ -33,10 +33,12 @@ sub decode {
 #
 sub encode {
     my ($self, $value) = @_;
+    $value = $value || $self->{_default} || '';
     if ($self->{_valfmt}) {
         $value = sprintf($self->{_valfmt});
     }
     if ($self->{_strfmt}) {
+        # Fixed-width formatting.
         $value = sprintf $self->{_strfmt}, substr($value, 0, $self->{width});
     }
     return $value;

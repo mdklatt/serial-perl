@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More(tests => 11);
+use Test::More(tests => 13);
 
 use Serial::Core::ScalarField;
 
@@ -39,14 +39,10 @@ sub test_decode {
     return;
 }
 
-sub test_decode_null {
-    my $field = Serial::Core::ScalarField->new('name', 0);
-    return;
-}
-
 sub test_encode {
     my $field = Serial::Core::ScalarField->new('name', 0);
-    is($field->encode('abc'), 'abc', 'test_encode');
+    is($field->encode('abc'), 'abc', 'test_encode: value');
+    is($field->encode(undef), '', 'test_encode: null');
     return;
 }
 
@@ -54,6 +50,7 @@ sub test_encode_fixed {
     my $field = Serial::Core::ScalarField->new('name', [0, 4]);
     is($field->encode('abc'), ' abc', 'test_encode_fixed: padded');
     is($field->encode('abcde'), 'abcd', 'test_encode_fixed: trimmed');
+    is($field->encode(undef), '    ', 'test_encode_fixed: null');
     return;
 }
 
@@ -63,6 +60,5 @@ sub test_encode_fixed {
 test_new();
 test_new_fixed();
 test_decode();
-test_decode_null();
 test_encode();
 test_encode_fixed();
