@@ -22,7 +22,7 @@ sub new {
 sub decode {
     my ($self, $token) = @_;
     $token =~ s/^\s+|\s+$//g;  # strip leading/trailing whitespace
-    return $token; 
+    return $token eq '' ? $self->{_default} : $token
 }
 
 
@@ -62,7 +62,7 @@ sub _init {
         # Integer postion; the width is 1 field.
         $self->{width} = 1;
     }
-    
+    $self->{_default} = undef;  # TODO: user argument
     return;
 }    
 
