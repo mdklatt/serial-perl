@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More(tests => 13);
+use Test::More(tests => 14);
 
 use Serial::Core::ScalarField;
 
@@ -16,8 +16,8 @@ sub test_new {
     my $width = 1;
     my $field = Serial::Core::ScalarField->new($name, $pos, $width);
     is($field->{name}, $name, 'test_new: name attribute');
-    ok($field->{pos} == $pos, 'test_new: pos attribute');
-    ok($field->{width} == $width, 'test_new: width attribute');
+    is($field->{pos}, $pos, 'test_new: pos attribute');
+    is($field->{width}, $width, 'test_new: width attribute');
     return;
 }
 
@@ -43,6 +43,8 @@ sub test_encode {
     my $field = Serial::Core::ScalarField->new('name', 0);
     is($field->encode('abc'), 'abc', 'test_encode: value');
     is($field->encode(undef), '', 'test_encode: null');
+    $field = Serial::Core::ScalarField->new('name', 0, '%5.3f');
+    is($field->encode(1.23), '1.230', 'test_encode: formatted');
     return;
 }
 

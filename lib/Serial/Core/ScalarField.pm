@@ -35,7 +35,7 @@ sub encode {
     my ($self, $value) = @_;
     $value = $value || $self->{_default} || '';
     if ($self->{_valfmt}) {
-        $value = sprintf($self->{_valfmt});
+        $value = sprintf($self->{_valfmt}, $value);
     }
     if ($self->{_strfmt}) {
         # Fixed-width formatting.
