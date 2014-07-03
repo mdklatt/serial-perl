@@ -21,7 +21,11 @@ sub new {
 #
 sub decode {
     my ($self, $token) = @_;
-    $token =~ s/^\s+|\s+$//g;  # strip leading/trailing whitespace
+    $token =~ s/^\s+|\s+$//g;
+    if ($self->{_quote}) {
+        my $quote = qr/$self->{_quote}/;    
+        $token =~ s/^$quote+|$quote+$//g;    
+    }
     return $token eq '' ? $self->{_default} : $token
 }
 
@@ -35,6 +39,9 @@ sub encode {
     $value = $value || $self->{_default} || '';
     if ($self->{_valfmt}) {
         $value = sprintf($self->{_valfmt}, $value);
+    }
+    if ($self->{_quote}) {
+        $value = $self->{_quote}.$value.$self->{_quote};
     }
     if ($self->{_strfmt}) {
         # Fixed-width formatting.
@@ -56,6 +63,7 @@ sub _init {
     my %opts = @_[2..$#_];
     $self->{_valfmt} = $opts{fmt};
     $self->{_default} = $opts{default};
+    $self->{_quote} = $opts{quote};
     if (ref($self->{pos}) eq 'ARRAY') {
         # This is a fixed-width field; the width is in characters.
         $self->{width} = @{$self->{pos}}[1];
