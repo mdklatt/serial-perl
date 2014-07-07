@@ -10,6 +10,8 @@ use base qw(Serial::Core::_Reader);
 use strict;
 use warnings;
 
+use Data::Dumper;
+
 # Initialize this object.
 #
 sub _init {
@@ -30,9 +32,12 @@ sub _get {
     return if !(my $line = <$stream>);
     chomp $line;
     my $tokens = $self->_split($line);
-    return {map { 
-        $_->{name} => $_->decode($tokens->[$_->{pos}]) 
-    } @{$self->{_fields}}};
+    my %record;
+    foreach (0..$#{$self->{_fields}}) {
+        my $field = $self->{_fields}[$_];
+        $record{$field->{name}} = $field->decode($tokens->[$_]);
+    }
+    return \%record;
 }
 
 # Split a line of text into an array of tokens.
