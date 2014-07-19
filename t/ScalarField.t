@@ -1,9 +1,9 @@
-# Test the Serial::Core::ScalarField class.
+# Test the Serial::Core::ScalarField class module.
 #
 use strict;
 use warnings;
-use Test::More(tests => 18);
 
+use Test::More;
 use Serial::Core::ScalarField;
 
 
@@ -73,3 +73,4 @@ test_new_fixed();
 test_decode();
 test_encode();
 test_encode_fixed();
+done_testing();

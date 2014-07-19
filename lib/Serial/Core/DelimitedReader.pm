@@ -15,9 +15,8 @@ use warnings;
 # If no delimiter is specified each input line will be split on whitespace.
 #
 sub _init {
-    my ($self) = shift @_;
-    my ($stream, $fields) = @_;
-    my %opts = @_[2..$#_];
+    my $self = shift @_;
+    my ($stream, $fields, %opts) = @_;
     $self->SUPER::_init($stream, $fields, %opts);
     $self->{_delim} = $opts{delim};
     return;
@@ -26,7 +25,8 @@ sub _init {
 # Split a line of text into an array of tokens.
 #
 sub _split {
-    my ($self, $line) = @_;
+    my $self = shift @_;
+    my ($line) = @_;
     my @tokens;
     if (!$self->{_delim}) {
         # Split on any whitespace. A literal ' ' must be used; this cannot be

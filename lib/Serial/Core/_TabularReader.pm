@@ -10,15 +10,12 @@ use base qw(Serial::Core::_Reader);
 use strict;
 use warnings;
 
-use Data::Dumper;
-
 # Initialize this object.
 #
 sub _init {
     my $self = shift @_;
     $self->SUPER::_init();
-    ($self->{_stream}, $self->{_fields}) = @_;
-    my %opts = @_[2..$#_];
+    ($self->{_stream}, $self->{_fields}, my %opts) = @_;
     $self->{_endl} = $opts{endl} || $/;  # default to system newline
     return;
 }
@@ -44,7 +41,7 @@ sub _get {
 #
 sub _split {
     # This must be implemented by child classes to return an array reference.
-    die "abstract method ${\(caller(0))[3]} not implemented";
+    die "abstract method not implemented";
 }
 
 1;

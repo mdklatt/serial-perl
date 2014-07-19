@@ -14,7 +14,7 @@ use warnings;
 sub new {
     # Derived classes should not need to override this class; override _init()
     # to handle class-specific initialization.
-    my ($class) = shift @_;
+    my $class = shift @_;
     $class ne __PACKAGE__ or die "${class} is an abstract class";
     my $self = bless({}, $class);
     $self->_init(@_);
@@ -28,10 +28,10 @@ sub new {
 # the record.
 #
 sub filter {
-    # This does not effect class filters.
-    my ($self, @callbacks) = @_;
-    if (@callbacks) {
-        push @{$self->{_user_filters}}, @callbacks;    
+    # This does not affect class filters.
+    my $self = shift @_;
+    if (@_) {
+        push @{$self->{_user_filters}}, @_;    
     }
     else {
         $self->{_user_filters} = [];    
@@ -44,7 +44,7 @@ sub filter {
 # This returns undef on EOF so it can be used in a while loop.
 #
 sub read {
-    my ($self) = @_;
+    my $self = shift @_;
     while (my $record = $self->_get()) {
         # Continue until a valid record is found or EOF. This would be
         # simplified by recursion, but recursion could not handle a large
@@ -61,8 +61,9 @@ sub read {
 }
 
 # Read all records into a list.
+#
 sub all {
-    my ($self) = @_;
+    my $self = shift @_;
     my @records;
     while (my $record = $self->read()) {
         push @records, $record;
@@ -80,7 +81,7 @@ sub _init {
     # Class filters are always applied before any user filters. Derived classes
     # can use these to do any preliminary data manipulation after the record is
     # parsed.
-    my ($self) = @_;
+    my $self = shift @_;
     $self->{_class_filters} = [];
     $self->{_user_filters} = [];
     return;

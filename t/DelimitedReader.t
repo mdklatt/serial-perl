@@ -1,8 +1,8 @@
-# Test the Serial::Core::DelimitedReader class.
+# Test the Serial::Core::DelimitedReader class module.
 #
 use strict;
 use warnings;
-use Test::More(tests => 4);
+use Test::More;
 
 use Serial::Core::ScalarField;
 use Serial::Core::DelimitedReader;
@@ -31,8 +31,8 @@ sub test_read {
 sub test_all {
     open my $stream, '<', \" a  1 \n b  2 \n";
     my $reader = Serial::Core::DelimitedReader->new($stream, $fields);
-    my $records = [{str => 'a', int => 1}, {str => 'b', int => 2}];
-    is_deeply([$reader->all()], $records, "test_all");
+    my @records = ({str => 'a', int => 1}, {str => 'b', int => 2});
+    is_deeply([$reader->all()], \@records, "test_all");
     return;
 }
 
@@ -41,3 +41,4 @@ sub test_all {
 
 test_read();
 test_all();
+done_testing();

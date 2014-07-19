@@ -11,7 +11,7 @@ use warnings;
 sub new {
     # Derived classes should not need to override this class; override _init()
     # to handle class-specific initialization.
-    my ($class) = shift @_;
+    my $class = shift @_;
     my $self = bless {}, $class;
     $self->_init(@_);
     return $self;
@@ -20,7 +20,8 @@ sub new {
 # Convert a string token to a scalar value.
 #
 sub decode {
-    my ($self, $token) = @_;
+    my $self = shift @_;
+    my ($token) = @_;
     $token =~ s/^\s+|\s+$//g;
     if ($self->{_quote}) {
         my $quote = qr/$self->{_quote}/;    
@@ -35,7 +36,8 @@ sub decode {
 # within the allotted field width.
 #
 sub encode {
-    my ($self, $value) = @_;
+    my $self = shift @_;
+    my ($value) = @_;
     $value = $value || $self->{_default} || '';
     if ($self->{_valfmt}) {
         $value = sprintf($self->{_valfmt}, $value);
