@@ -43,7 +43,7 @@ sub filter {
 #
 # This returns undef on EOF so it can be used in a while loop.
 #
-sub read {
+sub next {
     my $self = shift @_;
     while (my $record = $self->_get()) {
         # Continue until a valid record is found or EOF. This would be
@@ -65,7 +65,7 @@ sub read {
 sub all {
     my $self = shift @_;
     my @records;
-    while (my $record = $self->read()) {
+    while (my $record = $self->next()) {
         push @records, $record;
     }
     return wantarray ? @records : \@records;

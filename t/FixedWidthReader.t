@@ -15,13 +15,13 @@ our $fields = [
     Serial::Core::ScalarField->new('int', [2, 2])
 ];
 
-sub test_read {
+sub test_next {
     open my $stream, '<', \" a 1\n b 2\n";
     my $reader = Serial::Core::FixedWidthReader->new($stream, $fields);
-    is_deeply({$reader->read()}, {str => 'a', int => 1}, 'test_read');
+    is_deeply({$reader->next()}, {str => 'a', int => 1}, 'test_next');
     open $stream, '<', \" a 1X b 2X";
     $reader = Serial::Core::FixedWidthReader->new($stream, $fields, endl => 'X');
-    is_deeply({$reader->read()}, {str => 'a', int => 1}, 'test_read: endl');
+    is_deeply({$reader->next()}, {str => 'a', int => 1}, 'test_next: endl');
     return;
 }
 
@@ -36,6 +36,6 @@ sub test_all {
 
 # Run tests.
 
-test_read();
+test_next();
 test_all();
 done_testing();
