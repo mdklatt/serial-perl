@@ -7,6 +7,8 @@ package Serial::Core::_Reader;
 use strict;
 use warnings;
 
+use Data::Dumper;
+
 # Create a new object.
 #
 # See _init() for an argument description.
@@ -60,13 +62,17 @@ sub next {
     return;  # EOF
 }
 
-# Read all records into a list.
+# Read all records into a array.
 #
-sub all {
+# Use the optional 'count' keyword argument to limit the number of records.
+#
+sub read {
     my $self = shift @_;
+    my $count = {@_}->{count};
     my @records;
     while (my $record = $self->next()) {
         push @records, $record;
+        last if defined($count) && scalar(@records) == $count;
     }
     return wantarray ? @records : \@records;
 }

@@ -2,8 +2,9 @@
 #
 use strict;
 use warnings;
-use Test::More;
 
+use Test::More;
+use Fcntl qw(SEEK_SET);
 use Serial::Core::ScalarField;
 use Serial::Core::DelimitedReader;
 
@@ -28,11 +29,18 @@ sub test_next {
     return;
 }
 
-sub test_all {
-    open my $stream, '<', \" a  1 \n b  2 \n";
+sub test_read {
+    open my $stream, '<', \" a  1 \n b  2 \n c  3 \n";
+    my @records = (
+        {str => 'a', int => 1}, 
+        {str => 'b', int => 2}, 
+        {str => 'c', int => 3},
+    );
     my $reader = Serial::Core::DelimitedReader->new($stream, $fields);
-    my @records = ({str => 'a', int => 1}, {str => 'b', int => 2});
-    is_deeply([$reader->all()], \@records, "test_all");
+    is_deeply([$reader->read()], \@records, "test_read");
+    seek $stream, 0, SEEK_SET;
+    $reader = Serial::Core::DelimitedReader->new($stream, $fields);
+    is_deeply([$reader->read(count => 2)], [@records[0..1]], "test_read: count");
     return;
 }
 
@@ -40,5 +48,5 @@ sub test_all {
 # Run tests.
 
 test_next();
-test_all();
+test_read();
 done_testing();
