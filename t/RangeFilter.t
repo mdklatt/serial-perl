@@ -9,10 +9,10 @@ use Serial::Core::RangeFilter;
 # Define unit tests.
 
 our @values = (1, 2, 3);
+our @records = map { {test => $_} } @values;
 
 sub test_whitelist {
     my $whitelist = Serial::Core::RangeFilter->new('test', [1, 2]);
-    my @records = map { {test => $_} } @values;
     my @filtered = (@records[0, 1], undef);
     is_deeply([map { $whitelist->call($_) } @records], \@filtered, 'test_whitelist');
     return;
@@ -20,9 +20,18 @@ sub test_whitelist {
 
 sub test_blacklist {
     my $blacklist = Serial::Core::RangeFilter->new('test', [1, 2], blacklist => 1);
-    my @records = map { {test => $_} } @values;
     my @filtered = (undef, undef, $records[2]);
     is_deeply([map { $blacklist->call($_) } @records], \@filtered, 'test_blacklist');
+    return;
+}
+
+sub test_limits {
+    my $filter = Serial::Core::RangeFilter->new('test', [undef, 2]);
+    my @filtered = ($records[0], $records[1], undef);
+    is_deeply([map { $filter->call($_) } @records], \@filtered, 'test_limits: no min');
+    $filter = Serial::Core::RangeFilter->new('test', [2, undef]);
+    @filtered = (undef, $records[1], $records[2]);
+    is_deeply([map { $filter->call($_) } @records], \@filtered, 'test_limits: no max');
     return;
 }
 
@@ -31,4 +40,5 @@ sub test_blacklist {
 
 test_whitelist();
 test_blacklist();
+test_limits();
 done_testing();
