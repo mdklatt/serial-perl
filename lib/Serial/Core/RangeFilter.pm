@@ -1,5 +1,5 @@
 package Serial::Core::RangeFilter;
-use parent qw(Serial::Core::_RecordFilter);
+use base qw(Serial::Core::_RecordFilter);
 
 use strict;
 use warnings;
