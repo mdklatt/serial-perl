@@ -16,10 +16,10 @@ sub test_whitelist {
     my $whitelist = Serial::Core::FieldFilter->new('test', ['abc', 'def']);
     my @records = map { {test => $_} } @values;
     my @filtered = (@records[0, 1], undef);
-    is_deeply([map { $whitelist->call($_) } @records], \@filtered, 'test_whitelist');
+    is_deeply([map { $whitelist->($_) } @records], \@filtered, 'test_whitelist');
     @records = ({not_test => 'abc'});
     @filtered = (undef);
-    is_deeply([map { $whitelist->call($_) } @records], \@filtered, 'test_whitelist');
+    is_deeply([map { $whitelist->($_) } @records], \@filtered, 'test_whitelist');
     return;
 }
 
@@ -28,9 +28,9 @@ sub test_blacklist {
         blacklist => 1);
     my @records = map { {test => $_} } @values;
     my @filtered = (undef, undef, $records[2]);
-    is_deeply([map { $blacklist->call($_) } @records], \@filtered, 'test_blacklist');
+    is_deeply([map { $blacklist->($_) } @records], \@filtered, 'test_blacklist');
     @records = map { {not_test => $_} } @values;
-    is_deeply([map { $blacklist->call($_) } @records], \@records, 'test_blacklist');
+    is_deeply([map { $blacklist->($_) } @records], \@records, 'test_blacklist');
     return;
 }
 

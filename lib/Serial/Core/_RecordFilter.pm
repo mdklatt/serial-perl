@@ -3,6 +3,8 @@ package Serial::Core::_RecordFilter;
 use strict;
 use warnings;
 
+use overload '&{}' => \&_func;  # make _RecordFilters callable
+
 
 # Create a new object.
 #
@@ -17,24 +19,31 @@ sub new {
     return $self;
 }
 
-# Execute the filter.
+# Return a filter function for this object.
 #
-sub call {
+# This is assigned to the & dereference operator so that the object can be used 
+# as a callaback.
+#
+sub _func {
     my $self = shift @_;
-    my ($record) = @_;
-    my $match = 0;
-    if (exists $record->{$self->{_field}}) {
-        $match = $self->_match($record->{$self->{_field}});
-    }
-    return ($match xor $self->{_blacklist}) ? $record : undef;
+    return sub {
+        my ($record) = @_;
+        my $match = 0;
+        if (exists $record->{$self->{_field}}) {
+            $match = $self->_match($record->{$self->{_field}});
+        }
+        return ($match xor $self->{_blacklist}) ? $record : undef;    
+    };
 }
 
+
+
 # Initialize this object.
-# 
 #
+# This is called by new() to do the real work when an object is created.
+# Derived classes may override this as necessary.
+# 
 sub _init {
-    # This is called by new() to do the real work when an object is created.
-    # Derived classes may override this as necessary.
     my $self = shift @_;
     ($self->{_field}, my %opts) = @_;
     $self->{_blacklist} = $opts{blacklist};
@@ -43,8 +52,9 @@ sub _init {
 
 # Return true if the given field value is a match for the filter.
 #
+# This must be implemented by derived classes.
+#
 sub _match {
-    # This must be implemented by child classes.
     die 'abstract method not implemented';
 }
 
