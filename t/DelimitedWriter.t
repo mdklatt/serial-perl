@@ -47,10 +47,30 @@ sub test_dump {
     is($buffer, "a\t1\nb\t2\nc\t3\n", 'test_dump');
     return;
 }
+
+sub test_filter {
+    my $reject = sub { 
+        my ($record) = @_;
+        return $record->{str} ne 'a' ? $record : undef; 
+    };
+    my $modify = sub { 
+        my ($record) = @_;
+        $record->{int} *= 2; 
+        return $record;
+    };
+    my $buffer;
+    open my $stream, '>', \$buffer;
+    my $writer = Serial::Core::DelimitedWriter->new($stream, $fields);
+    $writer->filter($reject, $modify);
+    $writer->dump(\@records);
+    is($buffer, "b\t4\nc\t6\n", 'test_filter');
+    return;
+}
     
 
 # Run tests.
 
 test_write();
 test_dump();
+test_filter();
 done_testing();
