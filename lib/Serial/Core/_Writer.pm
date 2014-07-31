@@ -44,9 +44,9 @@ sub filter {
 sub write {
     my $self = shift @_;
     my ($record) = @_;
-    my @callbacks = (@{$self->{_class_filters}}, @{$self->{_user_filters}});
-    foreach my $callback (@callbacks) {
-        if (!defined($record = $callback->($record))) {
+    my $callbacks = [@{$self->{_user_filters}}, @{$self->{_class_filters}}];
+    foreach (@{$callbacks}) {
+        if (!defined($record = $_->($record))) {
             return;
         }
     }
