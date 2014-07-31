@@ -47,15 +47,13 @@ sub filter {
 #
 sub next {
     my $self = shift @_;
+    my $callbacks = [@{$self->{_class_filters}}, @{$self->{_user_filters}}];
     while (my $record = $self->_get()) {
-        # Continue until a valid record is found or EOF. This would be
-        # simplified by recursion, but recursion could not handle a large
-        # number of invalid records.
-        foreach (@{$self->{_filters}}) {
+        # Continue until a valid record is found or EOF. 
+        foreach (@{$callbacks}) {
             # Apply each filter in order. Stop as soon as the record fails a
             # filter and try the next record.
-            $record = $_->($record);
-            last if !$record;
+            last if !defined($record = $_->($record));
         }
         return (wantarray ? %$record : $record) if $record;
     }

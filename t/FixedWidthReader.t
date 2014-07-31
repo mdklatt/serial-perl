@@ -9,12 +9,20 @@ use Serial::Core::ScalarField;
 use Serial::Core::FixedWidthReader;
 
 
+use Data::Dumper;
+
 # Define unit tests.
 
 our $fields = [
     Serial::Core::ScalarField->new('str', [0, 2]), 
     Serial::Core::ScalarField->new('int', [2, 2])
 ];
+
+our @records = (
+    {str => 'a', int => 1}, 
+    {str => 'b', int => 2}, 
+    {str => 'c', int => 3},    
+);
 
 sub test_next {
     open my $stream, '<', \" a 1\n b 2\n";
@@ -27,11 +35,6 @@ sub test_next {
 }
 
 sub test_read {
-    my @records = (
-        {str => 'a', int => 1}, 
-        {str => 'b', int => 2}, 
-        {str => 'c', int => 3},
-    );
     open my $stream, '<', \" a 1\n b 2\n c 3\n";
     my $reader = Serial::Core::FixedWidthReader->new($stream, $fields);
     is_deeply([$reader->read()], \@records, "test_read");
@@ -41,9 +44,28 @@ sub test_read {
     return;
 }
 
+sub test_filter {
+    my $reject = sub { 
+        my ($record) = @_;
+        return $record->{str} ne 'a' ? $record : undef; 
+    };
+    my $modify = sub { 
+        my ($record) = @_;
+        $record->{int} *= 2; 
+        return $record;
+    };
+    my @filtered = ({str => 'b', int => 4}, {str => 'c', int => 6});
+    open my $stream, '<', \" a 1\n b 2\n c 3\n";
+    my $reader = Serial::Core::FixedWidthReader->new($stream, $fields);
+    $reader->filter($reject, $modify);
+    is_deeply([$reader->read()], \@filtered, "test_filter");
+    return;
+}
+
 
 # Run tests.
 
 test_next();
 test_read();
+test_filter();
 done_testing();

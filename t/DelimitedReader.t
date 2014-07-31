@@ -37,10 +37,28 @@ sub test_read {
         {str => 'c', int => 3},
     );
     my $reader = Serial::Core::DelimitedReader->new($stream, $fields);
-    is_deeply([$reader->read()], \@records, "test_read");
+    is_deeply([$reader->read()], \@records, 'test_read');
     seek $stream, 0, SEEK_SET;
     $reader = Serial::Core::DelimitedReader->new($stream, $fields);
-    is_deeply([$reader->read(count => 2)], [@records[0..1]], "test_read: count");
+    is_deeply([$reader->read(count => 2)], [@records[0..1]], 'test_read: count');
+    return;
+}
+
+sub test_filter {
+    my $reject = sub { 
+        my ($record) = @_;
+        return $record->{str} ne 'a' ? $record : undef; 
+    };
+    my $modify = sub { 
+        my ($record) = @_;
+        $record->{int} *= 2; 
+        return $record;
+    };
+    my @filtered = ({str => 'b', int => 4}, {str => 'c', int => 6});
+    open my $stream, '<', \" a  1 \n b  2 \n c  3 \n";
+    my $reader = Serial::Core::DelimitedReader->new($stream, $fields);
+    $reader->filter($reject, $modify);
+    is_deeply([$reader->read()], \@filtered, "test_filter");
     return;
 }
 
@@ -49,4 +67,5 @@ sub test_read {
 
 test_next();
 test_read();
+test_filter();
 done_testing();
