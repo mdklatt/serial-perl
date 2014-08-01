@@ -16,26 +16,27 @@ our $fields = [
     Serial::Core::ScalarField->new('int', 1)
 ];
 
+our @records = (
+    {str => 'a', int => 1}, 
+    {str => 'b', int => 2}, 
+    {str => 'c', int => 3},
+);
+
 sub test_next {
     open my $stream, '<', \" a  1 \n b  2 \n";
     my $reader = Serial::Core::DelimitedReader->new($stream, $fields);
-    is_deeply({$reader->next()}, {str => 'a', int => 1}, 'test_next: whitespace');
+    is_deeply({$reader->next()}, $records[0], 'test_next: whitespace');
     open $stream, '<', \" a,  1\n b,  2\n";
     $reader = Serial::Core::DelimitedReader->new($stream, $fields, delim => ',');
-    is_deeply({$reader->next()}, {str => 'a', int => 1}, 'test_next: delim');
+    is_deeply({$reader->next()}, $records[0], 'test_next: delim');
     open $stream, '<', \" a  1  X b  2  X";
     $reader = Serial::Core::DelimitedReader->new($stream, $fields, endl=> 'X');
-    is_deeply({$reader->next()}, {str => 'a', int => 1}, 'test_next: endl');
+    is_deeply({$reader->next()}, $records[0], 'test_next: endl');
     return;
 }
 
 sub test_read {
     open my $stream, '<', \" a  1 \n b  2 \n c  3 \n";
-    my @records = (
-        {str => 'a', int => 1}, 
-        {str => 'b', int => 2}, 
-        {str => 'c', int => 3},
-    );
     my $reader = Serial::Core::DelimitedReader->new($stream, $fields);
     is_deeply([$reader->read()], \@records, 'test_read');
     seek $stream, 0, SEEK_SET;
