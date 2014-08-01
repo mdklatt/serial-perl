@@ -27,10 +27,10 @@ our @records = (
 sub test_next {
     open my $stream, '<', \" a 1\n b 2\n";
     my $reader = Serial::Core::FixedWidthReader->new($stream, $fields);
-    is_deeply({$reader->next()}, {str => 'a', int => 1}, 'test_next');
+    is_deeply({$reader->next()}, $records[0], 'test_next');
     open $stream, '<', \" a 1X b 2X";
     $reader = Serial::Core::FixedWidthReader->new($stream, $fields, endl => 'X');
-    is_deeply({$reader->next()}, {str => 'a', int => 1}, 'test_next: endl');
+    is_deeply({$reader->next()}, $records[0], 'test_next: endl');
     return;
 }
 
