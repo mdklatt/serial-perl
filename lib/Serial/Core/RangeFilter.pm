@@ -7,8 +7,8 @@ use warnings;
 
 # Initialize this object.
 #
-# A RangeFilter is initialized with a field, an array of values, and an
-# optional 'blacklist' keyword argument that controls if this is a blacklist
+# A RangeFilter is initialized with a field, a [min, max] numerical range, and
+# an optional 'blacklist' named argument that controls if this is a blacklist
 # or a whitelist (default is whitelist).
 #
 sub _init {
@@ -29,3 +29,50 @@ sub _match {
 }
 
 1;
+
+__END__
+
+=pod 
+
+=encoding utf8
+
+=head1 NAME
+
+Serial::Core::RangeFilter - filter records using a numerical range
+
+=head1 SYNOPSIS
+
+    use Serial::Core;
+
+    $whitelist = new Serial::Core::RangeFilter($field, [$min, $max]);
+    $reader->filter($whitelist);
+
+=head1 DESCRIPTION
+
+A I<RangeFilter> is intended for use with the C<filter()> method of a I<Reader>
+or I<Writer>. The given field is matched against the numerical range 
+[min, max]. Matching records can be whitelisted or blacklisted.
+
+=head2 CLASS METHODS
+
+=over
+
+=item new($field, $range, blacklist => 0)
+
+Create a new filter. The first argument is the name of the field to match. The
+next argument is the numerical range [min, max]; if min or max is C<undef> the
+range is unlimited in that direction. Set the optional named boolean argument 
+I<blacklist> to true for blacklisting; whitelisting is the default behavior.
+
+=back
+
+=head2 OBJECT METHODS
+
+The object interface is used by I<Reader>s and I<Writer>s; there is no need to
+use a I<RangeFilteR> object directly in user code.
+
+=head1 EXPORTS
+
+The I<Serial::Core> library makes this class available by default.
+
+=cut

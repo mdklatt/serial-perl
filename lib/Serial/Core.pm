@@ -76,7 +76,7 @@ Filter input/output using a set of field values.
 
 =item I<RangeFilter>
 
-Filter input/output using a range of field values.
+Filter input/output using a numerical range of field values.
 
 =back
 
