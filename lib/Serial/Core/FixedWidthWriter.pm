@@ -55,7 +55,7 @@ to one line of output.
 
 =over
 
-=item new($stream, $fields, endl => $endl)
+=item new($stream, $fields, endl => $/)
 
 Create a new writer. The first argument is a handle to the output stream, which
 is any object for which C<print $stream $line> is defined. The optional I<endl>

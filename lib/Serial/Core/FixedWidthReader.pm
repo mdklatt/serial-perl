@@ -58,7 +58,7 @@ to one data record.
 
 =over
 
-=item new($stream, $fields, endl => $endl)
+=item new($stream, $fields, endl => $/)
 
 Create a new reader. The first argument is a handle to the input stream, which
 is any object for which C<E<lt>$streamE<gt>> returns a line of input. The next
