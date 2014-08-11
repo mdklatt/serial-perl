@@ -17,7 +17,7 @@ sub _init {
     my $self = shift @_;
     my ($field, $range, %opts) = @_;
     $self->SUPER::_init($field, %opts);
-    ($self->{_min}, $self->{_max}) = @$range;
+    @$self{qw(_min _max)} = @$range;
     return;
 }
 

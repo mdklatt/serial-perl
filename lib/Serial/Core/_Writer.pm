@@ -59,7 +59,7 @@ sub write {
 sub dump {
     my $self = shift @_;
     my ($records) = @_;
-    foreach my $record (@{$records}) {
+    foreach my $record (@$records) {
         $self->write($record);
     }
     return;

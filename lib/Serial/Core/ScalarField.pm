@@ -61,11 +61,8 @@ sub _init {
     # This is called by new() to do the real work when an object is created.
     # Derived classes may override this as necessary.
     my $self = shift @_;
-    ($self->{name}, $self->{pos}) = @_;
-    my %opts = @_[2..$#_];
-    $self->{_valfmt} = $opts{fmt};
-    $self->{_default} = $opts{default};
-    $self->{_quote} = $opts{quote};
+    ($self->{name}, $self->{pos}, my %opts) = @_;
+    @$self{qw(_valfmt _default _quote)} = @opts{qw(fmt default quote)};
     if (ref($self->{pos}) eq 'ARRAY') {
         # This is a fixed-width field; the width is in characters.
         $self->{width} = @{$self->{pos}}[1];
