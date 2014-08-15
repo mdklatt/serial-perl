@@ -16,6 +16,7 @@ use Serial::Core::DelimitedReader;
 use Serial::Core::DelimitedWriter;
 use Serial::Core::FixedWidthReader;
 use Serial::Core::FixedWidthWriter;
+use Serial::Core::ConstField;
 use Serial::Core::ScalarField;
 use Serial::Core::FieldFilter;
 use Serial::Core::RangeFilter;
@@ -69,6 +70,10 @@ Writes fixed-width tabular data.
 =item I<ScalarField>
 
 Define a scalar input/ouput field.
+
+=item I<ScalarField>
+
+Define a constant value input/ouput field.
 
 =item I<FieldFilter>
 
