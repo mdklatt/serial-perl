@@ -78,7 +78,7 @@ Serial::Core::ConstField - define a constant value field
     my $reader = new Serial::Core::DelimitedReader($stream, \@fields);
 
     my @fields = (
-        Serial::Core::ConstField->new($name, [$beg, $len], $const),
+        Serial::Core::ConstField->new($name, [$beg, $len], $value),
         ...
     );
     my $reader = new Serial::Core::FixedWidthReader($stream, \@fields);
@@ -87,8 +87,8 @@ Serial::Core::ConstField - define a constant value field
 =head1 DESCRIPTION
 
 A I<ConstField> maps a constant input/output value to a data field. I<Reader>s
-and I<Writer>s are initialized using one or more field specifiers that define
-the layout of their data stream.
+and I<Writer>s are initialized using a list of fields that defines the layout
+of their data stream.
 
 =head2 CLASS METHODS
 
