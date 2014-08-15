@@ -43,25 +43,48 @@ Serial::Core::FieldFilter - filter records using a set of values
 
     use Serial::Core;
 
-    my $whitelist = new Serial::Core::FieldFilter($field, $value);
-    $reader->filter($whitelist);
+    my $filter = new Serial::Core::FieldFilter($field, $values);
+    $reader->filter($filter);
 
 
 =head1 DESCRIPTION
 
-A I<FieldFilter> is intended for use with the C<filter()> method of a I<Reader>
-or I<Writer>. The given field is matched against a set of values. Matching 
-records can be whitelisted or blacklisted.
+A I<FieldFilter> is a callback that can be used with the C<filter()> method of 
+a I<Reader> or I<Writer>. Field values are matched against a set of values, and
+matching records can be whitelisted or blacklisted. 
 
 =head2 CLASS METHODS
 
 =over
 
-=item new($field, $range, blacklist => 0)
+=item new($field, $values, blacklist => 0)
 
-Create a new filter. The first argument is the name of the field to match. The
-next argument is an arrayref of values. Set the optional named boolean argument 
-I<blacklist> to true for blacklisting; whitelisting is the default behavior.
+Create a new I<FieldFilter> object.
+
+=back
+
+=head3 Required Positional Arguments
+
+=over
+
+=item I<field> 
+
+The field name to match.
+
+=item I<value>
+
+An arrayref specifying the values to match against.
+
+=back
+
+=head3 Optional Named Arguments
+
+=over
+
+=item I<blacklist>
+
+Specify if matching records will be whitelisted or blacklisted. Set this to a
+true value to enable blacklisting.
 
 =back
 
