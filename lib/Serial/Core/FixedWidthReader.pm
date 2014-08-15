@@ -43,7 +43,7 @@ Serial::Core::FixedWidthReader - read fixed-width tabular data
         # Add a callback for input preprocessing.
         my ($record) = @_;
         ...
-        return $record;  # or return undef to ignore this record
+        return $record;  # or undef to drop this record
     };);
     while (my $record = $reader->next()) {
         # Process each record.
@@ -63,11 +63,32 @@ to one data record.
 
 =item new($stream, $fields, endl => $/)
 
-Create a new reader. The first argument is a handle to the input stream, which
-is any object for which C<E<lt>$streamE<gt>> returns a line of input. The next
-argument is an arrayref of field definitions for the input layout. The optional 
-I<endl> named argument specifies the endline character(s) to use; this is the 
-system endline C<$/> by default.
+Return a new I<FixedWidthReader> object. 
+
+=back
+
+=head3 Required Positional Arguments
+
+=over
+
+=item I<stream> 
+
+A handle to the input stream, which is any object for which 
+C<E<lt>$streamE<gt>> returns a line of input.
+
+=item I<fields>
+
+An arrayref of one or more field definitions that define the input layout.
+
+=back
+
+=head3 Optional Named Arguments
+
+=over
+
+=item I<endl>
+
+Specify the endline character(s) to use.
 
 =back
 
@@ -75,14 +96,27 @@ system endline C<$/> by default.
 
 =over
 
-=item filter($callback1, $callback2, ...)
+=item filter([$callback1, $callback2, ...])
 
 Add one or more filters to the reader, or without any arguments clear all
-filters. A filter is any callable object that takes a data record as its only
-argument. The filter should return a data record (the original record or a
-modified/new record) or C<undef> to ignore the input record. Filters are 
-applied to each incoming record in the order they were added; filtering stops 
-as soon as any filter in the chain returns C<undef>.
+filters. Filters are applied to each incoming record in the order they were
+added; filtering stops as soon as any filter drops the record.
+
+=back
+
+=head3 Optional Positional Arguments
+
+=over
+
+=item I<callback ...> 
+
+Specify callbacks to use as filters. A filter takes a data record as its only
+argument and returns that record, a new/modified record, or C<undef> to drop
+the record. 
+
+=back
+
+=over
 
 =item next()
 
@@ -92,7 +126,7 @@ used in a C<while> loop.
 
 =item read()
 
-Return all records from the stream as an array.
+Return all records from the stream as an array or arrayref.
 
 =back
 
@@ -100,5 +134,16 @@ Return all records from the stream as an array.
 =head1 EXPORTS
 
 The I<Serial::Core> library makes this class available by default.
+
+
+=head1 SEE ALSO
+
+=over
+
+=item ScalarField class
+
+=item ConstField class
+
+=back
 
 =cut
