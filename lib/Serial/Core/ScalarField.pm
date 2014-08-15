@@ -108,8 +108,8 @@ Serial::Core::ScalarField - define a scalar data field
 =head1 DESCRIPTION
 
 A I<ScalarField> maps a single input/output token to a data field. I<Reader>s
-and I<Writer>s are initialized using one or more field specifiers that define
-the layout of their data stream.
+and I<Writer>s are initialized using a list of fields that defines the layout
+of their data stream.
 
 =head2 CLASS METHODS
 
@@ -117,21 +117,48 @@ the layout of their data stream.
 
 =item new($name, $pos, fmt => '%s', quote => '', default => undef)
 
-Create a new field. The first argument is the name of the field, which is used
-to refer to the field in a data record, e.g. C<$record-E<gt>{$name}> The next 
-argument is the field position in the input/output line. For delimited data
-this is the field index (starting at 0), and for fixed-width data this is the 
-substring occupied by the field as given by its offset from 0 and total width
-(inclusive of any spacing between fields). Fixed-width fields are padded on 
-the left or trimmed on the right to fit their allotted width on output. 
+Return a new I<ScalarField> object.
 
-The optional named arguments are formatting options. The I<fmt> argument is a 
-C<printf()> format string that is used by a I<Writer> for formatted output (it
-has no effect on input). Specifying a format width is optional, but for
+=back
+
+=head3 Required Positional Arguments
+
+=over
+
+=item I<name> 
+
+Used to refer to the field in a data record, e.g. C<$record-E<gt>{$name}>.
+
+=item I<pos>
+
+The position of the field in the input/output line. For delimited data this is the field 
+index (starting at 0), and for fixed-width data this is the substring occupied 
+by the field as given by its offset from 0 and total width (inclusive of any 
+spacing between fields). Fixed-width fields are padded on the left or trimmed 
+on the right to fit their allotted width on output.
+
+=back
+
+=head3 Optional Named Arguments
+
+=over
+
+=item I<fmt>
+
+A C<printf()> format string that is used by a I<Writer> for formatted output
+(it has no effect on input). Specifying a format width is optional, but for
 fixed-width fields a format width smaller than the field width can be used to
-control spacing between fields. Specify a I<quote> character to strip input
-of leading/trailing quotes and to automatically quote output. The I<default>
-value is used for null/missing fields.
+control spacing between fields. 
+
+=item I<quote>
+
+Specify a I<quote> character to strip input of leading/trailing quotes and to 
+automatically quote output. 
+
+=item I<default>
+
+Specify a default value to use for null fields. This is used on input if the 
+field is blank and on output if the field is not defined in the data record.
 
 =back
 
