@@ -45,15 +45,15 @@ Serial::Core::RangeFilter - filter records using a numerical range
 
     use Serial::Core;
 
-    my $whitelist = new Serial::Core::RangeFilter($field, [$min, $max]);
-    $reader->filter($whitelist);
+    my $filter = new Serial::Core::RangeFilter($field, [$min, $max]);
+    $reader->filter($filter);
 
 
 =head1 DESCRIPTION
 
-A I<RangeFilter> is intended for use with the C<filter()> method of a I<Reader>
-or I<Writer>. The given field is matched against the numerical range 
-[min, max]. Matching records can be whitelisted or blacklisted.
+A I<RangeFilter> is a callback that can be used with the C<filter()> method of 
+a I<Reader> or I<Writer>. Field values are matched against a numeric range,
+and matching records can be whitelisted or blacklisted. 
 
 =head2 CLASS METHODS
 
@@ -61,10 +61,33 @@ or I<Writer>. The given field is matched against the numerical range
 
 =item new($field, $range, blacklist => 0)
 
-Create a new filter. The first argument is the name of the field to match. The
-next argument is the numerical range [min, max]; if min or max is C<undef> the
-range is unlimited in that direction. Set the optional named boolean argument 
-I<blacklist> to true for blacklisting; whitelisting is the default behavior.
+Create a new I<RangeFilter> object.
+
+=back
+
+=head3 Required Positional Arguments
+
+=over
+
+=item I<field> 
+
+The field name to match.
+
+=item I<range>
+
+An arrayref specifying the numerical range [min, max] to match against; if 
+either value is C<undef> the range is unlimited at that end.
+
+=back
+
+=head3 Optional Named Arguments
+
+=over
+
+=item I<blacklist>
+
+Specify if matching records will be whitelisted or blacklisted. Set this to a
+true value to enable blacklisting.
 
 =back
 
