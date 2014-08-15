@@ -26,9 +26,11 @@ __END__
 
 =encoding utf8
 
+
 =head1 NAME
 
 Serial::Core::FixedWidthWriter - write fixed-width tabular data
+
 
 =head1 SYNOPSIS
 
@@ -44,6 +46,7 @@ Serial::Core::FixedWidthWriter - write fixed-width tabular data
     foreach my $record (@records) {
         $writer->write($record);
     }
+
 
 =head1 DESCRIPTION
 
@@ -90,6 +93,7 @@ Write an array of records to the output stream. This is equivalent to:
     }
 
 =back
+
 
 =head1 EXPORTS
 

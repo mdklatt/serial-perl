@@ -36,6 +36,7 @@ __END__
 
 =encoding utf8
 
+
 =head1 NAME
 
 Serial::Core::RangeFilter - filter records using a numerical range
@@ -44,8 +45,9 @@ Serial::Core::RangeFilter - filter records using a numerical range
 
     use Serial::Core;
 
-    $whitelist = new Serial::Core::RangeFilter($field, [$min, $max]);
+    my $whitelist = new Serial::Core::RangeFilter($field, [$min, $max]);
     $reader->filter($whitelist);
+
 
 =head1 DESCRIPTION
 
@@ -68,8 +70,9 @@ I<blacklist> to true for blacklisting; whitelisting is the default behavior.
 
 =head2 OBJECT METHODS
 
-The object interface is used by I<Reader>s and I<Writer>s; there is no need to
-use a I<RangeFilteR> object directly in user code.
+The object methods are used by I<Reader>s and I<Writer>s; there is no need to
+access a I<RangeFilter> object directly.
+
 
 =head1 EXPORTS
 

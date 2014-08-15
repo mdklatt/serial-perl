@@ -33,16 +33,19 @@ __END__
 
 =encoding utf8
 
+
 =head1 NAME
 
 Serial::Core::FieldFilter - filter records using a set of values
+
 
 =head1 SYNOPSIS
 
     use Serial::Core;
 
-    $whitelist = new Serial::Core::FieldFilter($field, $values);
+    my $whitelist = new Serial::Core::FieldFilter($field, $value);
     $reader->filter($whitelist);
+
 
 =head1 DESCRIPTION
 
@@ -64,8 +67,9 @@ I<blacklist> to true for blacklisting; whitelisting is the default behavior.
 
 =head2 OBJECT METHODS
 
-The object interface is used by I<Reader>s and I<Writer>s; there is no need to
-use a I<FieldFilter> object directly in user code.
+The object methods are used by I<Reader>s and I<Writer>s; there is no need to
+access a I<FieldFilter> object directly.
+
 
 =head1 EXPORTS
 

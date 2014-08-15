@@ -47,9 +47,11 @@ __END__
 
 =encoding utf8
 
+
 =head1 NAME
 
 Serial::Core::DelimitedReader - read character-delimited tabular data
+
 
 =head1 SYNOPSIS
 
@@ -66,6 +68,7 @@ Serial::Core::DelimitedReader - read character-delimited tabular data
         # Process each record.
         ...
     }
+
 
 =head1 DESCRIPTION
 
@@ -113,6 +116,7 @@ used in a C<while> loop.
 Return all records from the stream as an array.
 
 =back
+
 
 =head1 EXPORTS
 

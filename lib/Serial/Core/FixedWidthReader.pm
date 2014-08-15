@@ -28,9 +28,11 @@ __END__
 
 =encoding utf8
 
+
 =head1 NAME
 
 Serial::Core::FixedWidthReader - read fixed-width tabular data
+
 
 =head1 SYNOPSIS
 
@@ -47,6 +49,7 @@ Serial::Core::FixedWidthReader - read fixed-width tabular data
         # Process each record.
         ...
     }
+
 
 =head1 DESCRIPTION
 
@@ -92,6 +95,7 @@ used in a C<while> loop.
 Return all records from the stream as an array.
 
 =back
+
 
 =head1 EXPORTS
 
