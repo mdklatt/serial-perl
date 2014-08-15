@@ -53,7 +53,7 @@ Serial::Core::DelimitedWriter - write character-delimited tabular data
         # Add a callback for output postprocessing.
         my ($record) = @_;
         ...
-        return $record;  # or return undef to ignore this record
+        return $record;  # or undef to drop this record
     };);
     foreach my $record (@records) {
         $writer->write($record);
@@ -72,12 +72,36 @@ one line of output.
 
 =item new($stream, $fields, delim => "\t", endl => $/)
 
-Create a new writer. The first argument is a handle to the output stream, which
-is any object for which C<print $stream $line> is defined. The next argument is
-an arrayref of field definitions for the output layout. The optional I<delim> 
-named argument specifies the field delimiter to use; output lines are
-tab-delimited by default. The optional I<endl> named argument specifies the 
-endline character(s) to use; this is the system endline C<$/> by default.
+Return a new I<DelimitedWriter> object.
+
+=back
+
+=head3 Required Positional Arguments
+
+=over
+
+=item I<stream> 
+
+A handle to the output stream, which is any object for which 
+C<print $stream $line> writes an output line to the stream.
+
+=item I<fields>
+
+An arrayref of one or more field definitions that define the output layout.
+
+=back
+
+=head3 Optional Named Arguments
+
+=over
+
+=item I<delim>
+
+Specify the field delimter to use.
+
+=item I<endl>
+
+Specify the endline character(s) to use.
 
 =back
 
@@ -85,22 +109,49 @@ endline character(s) to use; this is the system endline C<$/> by default.
 
 =over
 
-=item filter($callback1, $callback2, ...)
+=item filter([$callback1, $callback2, ...])
 
 Add one or more filters to the writer, or without any arguments clear all
-filters. A filter is any callable object that takes a data record as its only
-argument. The filter should return a data record (the original record or a
-modified/new record) or C<undef> to ignore the output record. Filters are 
-applied to each outgoing record in the order they were added; filtering stops 
-as soon as any filter in the chain returns C<undef>.
+filters. Filters are applied to each outgoing record in the order they were
+added; filtering stops as soon as any filter drops the record.
+
+=back
+
+=head3 Optional Positional Arguments
+
+=over
+
+=item I<callback ...> 
+
+Specify callbacks to use as filters. A filter takes a data record as its only
+argument and returns that record, a new/modified record, or C<undef> to drop
+the record. 
+
+=back
+
+=over
 
 =item write($record)
 
 Write a filtered and formatted data record to the output stream. 
 
+=back
+
+=head3 Required Positional Arguments
+
+=over
+
+=item I<record> 
+
+The data record to write, where the record is a hashref keyed by field name.
+
+=back
+
+=over
+
 =item dump($records)
 
-Write an array of records to the output stream. This is equivalent to:
+Write multiple records to the output stream, eqivalent to:
 
     foreach my $record (@$records) {
         $writer->write($record);
@@ -108,9 +159,30 @@ Write an array of records to the output stream. This is equivalent to:
 
 =back
 
+=head3 Required Positional Arguments
+
+=over
+
+=item I<records> 
+
+An arrayref of records to be written.
+
+=back
+
 
 =head1 EXPORTS
 
 The I<Serial::Core> library makes this class available by default.
+
+
+=head1 SEE ALSO
+
+=over
+
+=item ScalarField class
+
+=item ConstField class
+
+=back
 
 =cut
