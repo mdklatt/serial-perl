@@ -14,7 +14,7 @@ our $width = 5;
 our $pos = [1, $width];
 our $value = 9999;
 our $token = ' 9999';
-our $field = Serial::Core::ConstField->new($name, $pos, $value, fmt => '%5d');
+our $field = Serial::Core::ConstField->new($name, $pos, $value);
 
 sub test_new {
     is($field->{name}, $name, 'test_new: name attribute');
@@ -24,14 +24,16 @@ sub test_new {
 }
 
 sub test_decode {
-    is($field->decode($token), $value, 'test_decode: value');
-    is($field->decode(' '), $value, 'test_decode: null');
+    is($field->decode($token), $value, 'test_decode');
+    is($field->decode(''), $value, 'test_decode: null');
     return;
 }
 
 sub test_encode {
-    is($field->encode($value), $token, 'test_encode: value');
+    is($field->encode($value), $token, 'test_encode');
     is($field->encode(undef), $token, 'test_encode: null');
+    my $field = Serial::Core::ConstField->new($name, $pos, $value, fmt => '%05d');
+    is($field->encode(undef), '09999', 'test_encode: fmt');
     return;
 }
 

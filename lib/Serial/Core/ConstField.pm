@@ -39,7 +39,7 @@ sub _init {
     # Derived classes may override this as necessary.
     my $self = shift @_;
     ($self->{name}, $self->{pos}, $self->{_value}, my %opts) = @_;
-    my $valfmt = $opts{fmt} or '%s';
+    my $valfmt = $opts{fmt} || '%s';
     my $token = sprintf $valfmt, $self->{_value};
     if (ref($self->{pos}) eq 'ARRAY') {
         # This is a fixed-width field; the width is in characters.
