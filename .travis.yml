@@ -16,4 +16,4 @@ branches:
         - master
         - dev
 
-script: prove -Ilib 
+script: prove -Isrc 
