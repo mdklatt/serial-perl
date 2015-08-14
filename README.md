@@ -60,7 +60,7 @@ Testing
 Tests are contained in the [`t`][9] directory and can be run using the [`prove`][10] 
 command.
 
-    prove -Ilib
+    prove -Isrc
 
 
 
