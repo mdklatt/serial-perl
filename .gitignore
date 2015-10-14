@@ -1,0 +1,8 @@
+.project
+.includepath
+.ignorepath
+.settings/
+_build/
+blib/
+MYMETA.*
+Build
