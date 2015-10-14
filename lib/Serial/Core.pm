@@ -4,11 +4,20 @@ use 5.008;
 use strict;
 use warnings;
 
-# Use Semantic Versioning within the limits of Perl version numbers. Versions
-# ending in 0 are releases, others are dev versions working towards the next
-# higher release, e.g. 0.001002_001 is equivalent to 0.1.3dev.
+# This project uses Semantic Versioning <http://semver.org>. Major versions
+# introduce significant changes to the API, and backwards compatibility is not
+# guaranteed. Minor versions are for new features and backwards-compatible
+# changes to the API. Patch versions are for bug fixes and internal code
+# changes that do not affect the API. Version 0.x should be considered a
+# development version with an unstable API, and backwards compatibility is not
+# guaranteed for minor versions.
+#
+# David Golden's recommendations for version numbers <http://bit.ly/1g8EbKi> 
+# are used, e.g. v0.1.2 is "0.001002" and v1.2.3dev4 is "1.002002_004".
 
-our $VERSION = eval '0.000000_001';  # 0.1.0dev
+our $VERSION = '0.000000_001';  # 0.1.0dev1
+$VERSION = eval $VERSION;  # runtime conversion to numeric value
+
 
 # Make the following classes available by default.
 
@@ -25,7 +34,7 @@ use Serial::Core::RangeFilter;
 
 __END__
 
-=pod 
+=pod
 
 =encoding utf8
 
