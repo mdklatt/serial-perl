@@ -4,10 +4,10 @@ use strict;
 use warnings;
 
 
-# Create a new object.
-#
-# See _init() for an argument description.
-#
+## Create a new object.
+##
+## See _init() for an argument description.
+##
 sub new {
     # Derived classes should not need to override this class; override _init()
     # to handle class-specific initialization.
@@ -17,8 +17,8 @@ sub new {
     return $self;
 }
 
-# Convert a string token to a scalar value.
-#
+## Convert a string token to a scalar value.
+##
 sub decode {
     my $self = shift @_;
     my ($token) = @_;
@@ -30,15 +30,15 @@ sub decode {
     return $token eq '' ? $self->{_default} : $token
 }
 
-# Convert a scalar value to a string token.
-#
-# Fixed-width fields are padded on the left or trimmed on the right to fit
-# within the allotted field width.
-#
+## Convert a scalar value to a string token.
+##
+## Fixed-width fields are padded on the left or trimmed on the right to fit
+## within the allotted field width.
+##
 sub encode {
     my $self = shift @_;
     my ($value) = @_;
-    $value = $value || $self->{_default} || '';
+    $value ||= $self->{_default} || '';
     if ($self->{_valfmt}) {
         $value = sprintf($self->{_valfmt}, $value);
     }
@@ -52,11 +52,11 @@ sub encode {
     return $value;
 }
 
-# Initialize this object.
-#
-# A ScalarField is initialized with a name, a position, and an optional sprintf
-# format string.
-#
+## Initialize this object.
+##
+## A ScalarField is initialized with a name, a position, and an optional 
+## sprintf format string.
+##
 sub _init {
     # This is called by new() to do the real work when an object is created.
     # Derived classes may override this as necessary.
@@ -131,11 +131,11 @@ Used to refer to the field in a data record, e.g. C<$record-E<gt>{$name}>.
 
 =item I<pos>
 
-The position of the field in the input/output line. For delimited data this is the field 
-index (starting at 0), and for fixed-width data this is the substring occupied 
-by the field as given by its offset from 0 and total width (inclusive of any 
-spacing between fields). Fixed-width fields are padded on the left or trimmed 
-on the right to fit their allotted width on output.
+The position of the field in the input/output line. For delimited data this is 
+the field index (starting at 0), and for fixed-width data this is the substring 
+occupied by the field as given by its offset from 0 and total width (inclusive 
+of any spacing between fields). Fixed-width fields are padded on the left or 
+trimmed on the right to fit their allotted width on output.
 
 =back
 
