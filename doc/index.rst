@@ -7,9 +7,20 @@ Welcome to Serial::Core's documentation!
 
 Contents:
 
-.. toctree::
-   :maxdepth: 2
+..  toctree::
+    :maxdepth: 2
 
+    Core
+    ScalarField
+    ConstField
+    TimeField
+    DelimitedReader
+    DelimitedWriter
+    FixedWidthReader
+    FixedWidthWriter
+    FieldFilter
+    RangeFilter
+ 
 
 Indices and tables
 ==================
