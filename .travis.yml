@@ -21,8 +21,9 @@ branches:
 
 sudo: false
 
-before_script:
-  - perl Build.PL
-
-script: 
-  - ./Build test
+before_install:
+  # The travis-perl helpers make sure the correct versions of the standard
+  # build tools--notably Module::Build--are installed for each Perl version.
+  - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
+  - source  ~/travis-perl-helpers/init --auto   
+  - cpanm Pod::POM Pod::POM::View::Restructured
