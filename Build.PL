@@ -50,7 +50,9 @@ my $builder = $class->new(
     dist_version_from   => 'lib/Serial/Core.pm',
     release_status      => 'unstable',
     configure_requires => {
-        'Module::Build' => 0,
+        'Module::Build' => 0.06,  # need subclass() method
+        'Pod::POM' => 0,
+        'Pod::POM::View::Restructured' => 0,
     },
     build_requires => {
         'Test::More' => 0,
