@@ -54,15 +54,8 @@ my $builder = $class->new(
         'Pod::POM' => 0,
         'Pod::POM::View::Restructured' => 0,
     },
-    build_requires => {
-        'Test::More' => 0,
-    },
-    requires => {
-        #'ABC'              => 1.6,
-        #'Foo::Bar::Module' => 5.0401,
-    },
-    add_to_cleanup     => ['Serial-Core-*'],
-    create_makefile_pl => 'traditional',
+    add_to_cleanup     => ['_build/', 'blib/', 'MYMETA.*', 'Serial-Core-*'],
+    create_makefile_pl => 'small',
 );
 
 
