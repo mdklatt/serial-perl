@@ -3,11 +3,9 @@
 use strict;
 use warnings;
 
-use Test::More;
+use Test::More tests => 8;
 use Serial::Core::ConstField;
 
-
-# Define unit tests.
 
 our $name = 'const';
 our $width = 5;
@@ -16,31 +14,26 @@ our $value = 9999;
 our $token = ' 9999';
 our $field = Serial::Core::ConstField->new($name, $pos, $value);
 
-sub test_new {
-    is($field->{name}, $name, 'test_new: name attribute');
-    is($field->{pos}, $pos, 'test_new: pos attribute');
-    is($field->{width}, $width, 'test_new: width attribute');
-    return;
+
+{
+    # Test the new() method.
+    is($field->{name}, $name, 'new: name');
+    is($field->{pos}, $pos, 'new: pos');
+    is($field->{width}, $width, 'new: width');
 }
 
-sub test_decode {
-    is($field->decode($token), $value, 'test_decode');
-    is($field->decode(''), $value, 'test_decode: null');
-    return;
+
+{
+    # Test the decode() method.
+    is($field->decode($token), $value, 'decode');
+    is($field->decode(''), $value, 'decode: null');
 }
 
-sub test_encode {
-    is($field->encode($value), $token, 'test_encode');
-    is($field->encode(undef), $token, 'test_encode: null');
+
+{
+    # Test the encode() method.
+    is($field->encode($value), $token, 'encode');
+    is($field->encode(undef), $token, 'encode: null');
     my $field = Serial::Core::ConstField->new($name, $pos, $value, fmt => '%05d');
-    is($field->encode(undef), '09999', 'test_encode: fmt');
-    return;
+    is($field->encode(undef), '09999', 'encode: fmt');
 }
-
-
-# Run tests.
-
-test_new();
-test_decode();
-test_encode();
-done_testing();

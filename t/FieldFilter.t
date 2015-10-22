@@ -2,41 +2,33 @@
 #
 use strict;
 use warnings;
-use Test::More;
 
+use Test::More tests => 4;
 use Serial::Core::FieldFilter;
 
-
-# Define unit tests.
 
 our @values = ('abc', 'def', 'ghi');
 
 
-sub test_whitelist {
+{
+    # Test whitelist filtering.
     my $whitelist = Serial::Core::FieldFilter->new('test', ['abc', 'def']);
     my @records = map { {test => $_} } @values;
     my @filtered = (@records[0, 1], undef);
-    is_deeply([map { $whitelist->($_) } @records], \@filtered, 'test_whitelist');
+    is_deeply([map { $whitelist->($_) } @records], \@filtered, 'whitelist');
     @records = ({not_test => 'abc'});
-    @filtered = (undef);
-    is_deeply([map { $whitelist->($_) } @records], \@filtered, 'test_whitelist');
-    return;
+    @filtered = undef;
+    is_deeply([map { $whitelist->($_) } @records], \@filtered, 'whitelist: empty');
 }
 
-sub test_blacklist {
+
+{
+    # Test blacklist filtering.
     my $blacklist = Serial::Core::FieldFilter->new('test', ['abc', 'def'],
         blacklist => 1);
     my @records = map { {test => $_} } @values;
     my @filtered = (undef, undef, $records[2]);
-    is_deeply([map { $blacklist->($_) } @records], \@filtered, 'test_blacklist');
+    is_deeply([map { $blacklist->($_) } @records], \@filtered, 'blacklist');
     @records = map { {not_test => $_} } @values;
-    is_deeply([map { $blacklist->($_) } @records], \@records, 'test_blacklist');
-    return;
+    is_deeply([map { $blacklist->($_) } @records], \@records, 'blacklist');
 }
-
-
-# Run tests.
-
-test_whitelist();
-test_blacklist();
-done_testing();

@@ -7,9 +7,9 @@ use Test::More tests => 15;
 use Serial::Core::TimeField;
 
 
-my $timestr = "2015-10-15";
-my $timefmt = "%Y-%m-%d";
-my $timeval = Time::Piece->strptime($timestr, $timefmt);
+our $timestr = "2015-10-15";
+our $timefmt = "%Y-%m-%d";
+our $timeval = Time::Piece->strptime($timestr, $timefmt);
 
 
 {
