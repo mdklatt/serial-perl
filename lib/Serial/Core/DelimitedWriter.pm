@@ -27,8 +27,9 @@ sub _init {
 sub _join {
     my $self = shift @_;
     my ($tokens) = @_;
-    return join $self->{_delim}, @{$tokens};
+    return join $self->{_delim}, @$tokens;
 }
+
 
 1;
 
@@ -41,147 +42,147 @@ __END__
 
 =head1 NAME
 
-Serial::Core::DelimitedWriter - write character-delimited tabular data
+Serial::Core::DelimitedWriter - Write character-delimited tabular data.
 
 
 =head1 SYNOPSIS
 
-    use Serial::Core;
+use Serial::Core;
 
-    my $writer = Serial::Core::DelimitedWriter->new($stream, $fields);
-    $writer->filter(sub {
-        # Add a callback for output postprocessing.
-        my ($record) = @_;
-        ...
-        return $record;  # or undef to drop this record
-    };);
-    foreach my $record (@records) {
-        $writer->write($record);
-    }
+my $writer = Serial::Core::DelimitedWriter->new($stream, \@fields, $endl);
+
+$writer->filter(sub {
+    my ($record) = @_;
+    # Modify record as necessary.
+    return $record;  # or return undef to drop record from the output sequence
+});
+
+$writer->write($record);  # write a record
+
+$writer->dump(\@records);  # write all records
 
 
 =head1 DESCRIPTION
 
-A I<DelimitedWriter> writes character-delimited tabular data where each field
-occupies the same position in each output line. One data record corresponds to
-one line of output. 
+A B<DelimitedWriter> writes character-delimited tabular data where each field
+occupies the same position in every output line. One data record corresponds
+to one line of output.
 
-=head2 CLASS METHODS
 
-=over
+=head1 PUBLIC METHODS
 
-=item new($stream, $fields, delim => "\t", endl => $/)
+These methods define the B<DelimitedWriter> interface.
 
-Return a new I<DelimitedWriter> object.
+=head2 B<new()>
 
-=back
+Class method that returns a new B<DelimitedWriter>.
 
-=head3 Required Positional Arguments
-
-=over
-
-=item I<stream> 
-
-A handle to the output stream, which is any object for which 
-C<print $stream $line> writes an output line to the stream.
-
-=item I<fields>
-
-An arrayref of one or more field definitions that define the output layout.
-
-=back
-
-=head3 Optional Named Arguments
+=head3 Positional Arugments
 
 =over
 
-=item I<delim>
+=item 
 
-Specify the field delimter to use.
+B<$stream>
 
-=item I<endl>
+A stream handle opened for output.
 
-Specify the endline character(s) to use.
+=item
+
+B<\@fields>
+
+An array of field objects. A field has a name, a position within each line of
+input, and encoding and decoding methods, I<c.f.> L<Serial::Core::ScalarField>. 
+
+=item 
+
+B<$delim>
+
+Field delimiter to use.
 
 =back
 
-=head2 OBJECT METHODS
+=head3 Named Options
 
 =over
 
-=item filter([$callback1, $callback2, ...])
+=item 
 
-Add one or more filters to the writer, or without any arguments clear all
-filters. Filters are applied to each outgoing record in the order they were
-added; filtering stops as soon as any filter drops the record.
+B<endl=E<gt>$endl>
+
+Endline character to use when writing output lines; defaults to C<$E<sol>>.
 
 =back
 
-=head3 Optional Positional Arguments
+=head2 B<filter()>
+
+Add one or more filters to the writer, or call without any arguments to clear
+all filters. 
+
+=head3 Positional Arguments
 
 =over
 
-=item I<callback ...> 
+=item 
 
-Specify callbacks to use as filters. A filter takes a data record as its only
-argument and returns that record, a new/modified record, or C<undef> to drop
-the record. 
+[B<\&filter1, ...>]
+
+A filter is any C<sub> that accepts a record as its only argument and returns 
+a record (as a hashref) or C<undef> to drop the record from the input sequence.
+Records are passed through each filter in the order they were added. A record 
+is dropped as soon as any filter returns C<undef>. Thus, it is more efficient 
+to order filters from most to least exclusive.
 
 =back
+
+=head2 B<write()>
+
+Write a filtered record to the output stream.
+
+=head3 Positional Arguments
 
 =over
 
-=item write($record)
+=item 
 
-Write a filtered and formatted data record to the output stream. 
+B<\%record>
+
+The record to write. The record will be passed through all filters before being 
+written.
 
 =back
 
-=head3 Required Positional Arguments
+=head2 B<dump()>
+
+Write a sequence of records to the output stream.
+
+=head3 Positional Arguments
 
 =over
 
-=item I<record> 
+=item 
 
-The data record to write, where the record is a hashref keyed by field name.
+B<\@records>
 
-=back
-
-=over
-
-=item dump($records)
-
-Write multiple records to the output stream, eqivalent to:
-
-    foreach my $record (@$records) {
-        $writer->write($record);
-    }
+An array of records to write. Each record will be passed through all filters 
+before being written.
 
 =back
-
-=head3 Required Positional Arguments
-
-=over
-
-=item I<records> 
-
-An arrayref of records to be written.
-
-=back
-
-
-=head1 EXPORTS
-
-The I<Serial::Core> library makes this class available by default.
 
 
 =head1 SEE ALSO
 
 =over
 
-=item ScalarField class
+=item L<Serial::Core::ConstField>
 
-=item ConstField class
+=item L<Serial::Core::ScalarField> 
+
+=item L<Serial::Core::TimeField>
+
+=item L<Serial::Core::FieldFilter>
+
+=item L<Serial::Core::RangeFilter>
 
 =back
 

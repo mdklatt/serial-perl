@@ -1,7 +1,3 @@
-# A reader for tabular data consisting of fixed-width fields.
-#
-# The position of each field is given as a [beg, len] array.
-#
 package Serial::Core::FixedWidthReader;
 use base qw(Serial::Core::_TabularReader);
 
@@ -24,125 +20,136 @@ sub _split {
 
 __END__
 
-=pod
+=pod 
 
 =encoding utf8
 
 
 =head1 NAME
 
-Serial::Core::FixedWidthReader - read fixed-width tabular data
+Serial::Core::FixedWidthReader - Read fixed-width tabular data.
 
 
 =head1 SYNOPSIS
 
     use Serial::Core;
-
-    my $reader = Serial::Core::FixedWidthReader->new($stream, $fields);
+    
+    my $reader = Serial::Core::FixedWidthReader->new($stream, \@fields);
+    
     $reader->filter(sub {
-        # Add a callback for input preprocessing.
         my ($record) = @_;
-        ...
-        return $record;  # or undef to drop this record
-    };);
+        # Modify record as necessary.
+        return $record;  # or return undef to drop record from the input sequence
+    });
+    
     while (my $record = $reader->next()) {
         # Process each record.
-        ...
     }
+    
+    my @records = $reader->read(count=>10);  # read at most 10 records
 
 
 =head1 DESCRIPTION
 
-A I<FixedWidthReader> reads fixed-width tabular data where each field occupies
-the same character positions in each input line. One line of input corresponds 
-to one data record. 
+A B<FixedWidthReader> reads fixed-width tabular data where each field occupies
+the same column in every input line. One line of input corresponds to one data 
+record. 
 
-=head2 CLASS METHODS
 
-=over
+=head1 PUBLIC METHODS
 
-=item new($stream, $fields, endl => $/)
+These methods define the B<FixedWidthReader> interface.
 
-Return a new I<FixedWidthReader> object. 
+=head2 B<new()>
 
-=back
+Class method that returns a new B<FixedWidthReader>.
 
-=head3 Required Positional Arguments
-
-=over
-
-=item I<stream> 
-
-A handle to the input stream, which is any object for which 
-C<E<lt>$streamE<gt>> returns a line of input.
-
-=item I<fields>
-
-An arrayref of one or more field definitions that define the input layout.
-
-=back
-
-=head3 Optional Named Arguments
+=head3 Positional Arugments
 
 =over
 
-=item I<endl>
+=item 
 
-Specify the endline character(s) to use.
+B<$stream>
+
+A stream handle opened for input.
+
+=item
+
+B<\@fields>
+
+An array of field objects. A field has a name, a position within each line of
+input, and encoding and decoding methods, I<c.f.> L<Serial::Core::ScalarField>. 
 
 =back
 
-=head2 OBJECT METHODS
+=head3 Named Options
 
 =over
 
-=item filter([$callback1, $callback2, ...])
+=item 
 
-Add one or more filters to the reader, or without any arguments clear all
-filters. Filters are applied to each incoming record in the order they were
-added; filtering stops as soon as any filter drops the record.
+B<endl =E<gt> $endl>
+
+Endline character to use when reading input lines; defaults to C<$E<sol>>.
 
 =back
 
-=head3 Optional Positional Arguments
+=head2 B<filter()>
+
+Add one or more filters to the reader, or call without any arguments to clear
+all filters. 
+
+=head3 Positional Arguments
 
 =over
 
-=item I<callback ...> 
+=item 
 
-Specify callbacks to use as filters. A filter takes a data record as its only
-argument and returns that record, a new/modified record, or C<undef> to drop
-the record. 
+[B<\&filter1, ...>]
+
+A filter is any C<sub> that accepts a record as its only argument and returns 
+a record (as a hashref) or C<undef> to drop the record from the input sequence.
+Records are passed through each filter in the order they were added. A record 
+is dropped as soon as any filter returns C<undef>. Thus, it is more efficient 
+to order filters from most to least exclusive.
 
 =back
+
+=head2 B<next()>
+
+Return the next filtered input record or C<undef> on EOF.
+
+=head2 B<read()>
+
+Return all filtered input records as an array.
+
+=head3 Named Options
 
 =over
 
-=item next()
+=item 
 
-Return the next parsed and filtered record from the input stream. Each record 
-is a hash keyed by the field names. On EOF C<undef> is returned, so this can be 
-used in a C<while> loop.
+B<count =E<gt> $count>
 
-=item read()
-
-Return all records from the stream as an array or arrayref.
+Return B<$count> records at most.
 
 =back
-
-
-=head1 EXPORTS
-
-The I<Serial::Core> library makes this class available by default.
 
 
 =head1 SEE ALSO
 
 =over
 
-=item ScalarField class
+=item L<Serial::Core::ConstField>
 
-=item ConstField class
+=item L<Serial::Core::ScalarField> 
+
+=item L<Serial::Core::TimeField>
+
+=item L<Serial::Core::FieldFilter>
+
+=item L<Serial::Core::RangeFilter>
 
 =back
 

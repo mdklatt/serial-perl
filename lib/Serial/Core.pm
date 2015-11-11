@@ -41,7 +41,7 @@ __END__
 
 =head1 NAME
 
-Serial::Core - read and write sequential record-oriented data
+Serial::Core - Read and write sequential record-oriented data.
 
 =head1 SYNOPSIS
 

@@ -5,15 +5,12 @@ use strict;
 use warnings;
 
 
-# Initialize this object.
-#
-# A RangeFilter is initialized with a field, a [min, max] numerical range, and
-# an optional 'blacklist' named argument that controls if this is a blacklist
-# or a whitelist (default is whitelist).
-#
+
+
 sub _init {
     # This is called by new() to do the real work when an object is created.
     # Derived classes may override this as necessary.
+    # TODO: Change min and max to seperate optional arguments.
     my $self = shift @_;
     my ($field, $range, %opts) = @_;
     $self->SUPER::_init($field, %opts);
@@ -21,12 +18,14 @@ sub _init {
     return;
 }
 
+
 sub _match {
     my $self = shift @_;
     my ($value) = @_;
     return (!defined($self->{_min}) || $self->{_min} <= $value) &&
            (!defined($self->{_max}) || $self->{_max} >= $value);
 }
+
 
 1;
 
@@ -39,66 +38,87 @@ __END__
 
 =head1 NAME
 
-Serial::Core::RangeFilter - filter records using a numerical range
+Serial::Core::RangeFilter - Filter a data field against a numeric range.
+
 
 =head1 SYNOPSIS
 
     use Serial::Core;
-
-    my $filter = new Serial::Core::RangeFilter($field, [$min, $max]);
-    $reader->filter($filter);
+    
+    my @range = (0, undef);  # all non-negative values
+    my $reader = Serial::Core::FixedWidthReader->new($stream, \@fields);
+    $reader->filter(Serial::Core::RangeFilter->new('field', \@range));
 
 
 =head1 DESCRIPTION
 
-A I<RangeFilter> is a callback that can be used with the C<filter()> method of 
-a I<Reader> or I<Writer>. Field values are matched against a numeric range,
-and matching records can be whitelisted or blacklisted. 
+A B<RangeFilter> filters a record by matching a data field against the numeric
+range [min, max]. The filter can act as either a whitelist (default) or 
+blacklist to accept or reject any matching records, respectively. The record is 
+not modified. A filter can be attached to readers and writers using their 
+C<filter()> method.
 
-=head2 CLASS METHODS
 
-=over
+=head1 PUBLIC METHODS
 
-=item new($field, $range, blacklist => 0)
+These methods define the B<RangeFilter> interface.
 
-Create a new I<RangeFilter> object.
+=head2 B<new()>
 
-=back
+Class method that returns a new B<RangeFilter>.
 
-=head3 Required Positional Arguments
-
-=over
-
-=item I<field> 
-
-The field name to match.
-
-=item I<range>
-
-An arrayref specifying the numerical range [min, max] to match against; if 
-either value is C<undef> the range is unlimited at that end.
-
-=back
-
-=head3 Optional Named Arguments
+=head3 Positional Arugments
 
 =over
 
-=item I<blacklist>
+=item 
 
-Specify if matching records will be whitelisted or blacklisted. Set this to a
-true value to enable blacklisting.
+B<$field>
+
+The data field name to use with this filter.
+
+=item
+
+B<\($min, $max)>
+
+The numeric range (inclusive) to match against. If either value is C<undef> the
+range is unlimited in that direction.
 
 =back
 
-=head2 OBJECT METHODS
+=head3 Named Options
 
-The object methods are used by I<Reader>s and I<Writer>s; there is no need to
-access a I<RangeFilter> object directly.
+=over
+
+=item 
+
+B<blacklist=E<gt>$blacklist>
+
+Boolean value to control blacklisting; defaults to false.
+
+=back
+
+=head2 B<&{} operator>
+
+The class overloads B<&{}> so that it can be used as a subroutine reference.
+This is used by readers and writers and normally does not need to be called in
+user code.
 
 
-=head1 EXPORTS
+=head1 SEE ALSO
 
-The I<Serial::Core> library makes this class available by default.
+=over
+
+=item L<Serial::Core::FieldFilter>
+
+=item L<Serial::Core::DelimitedReader>
+
+=item L<Serial::Core::DelimitedWriter>
+
+=item L<Serial::Core::FixedWidthReader>
+
+=item L<Serial::Core::FixedWidthWriter>
+
+=back
 
 =cut

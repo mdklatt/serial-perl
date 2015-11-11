@@ -1,32 +1,21 @@
-# Abstract base class for all writer types.
-#
-# Writers convert data records to lines of text.
-#
 package Serial::Core::_Writer;
 
 use strict;
 use warnings;
 
-# Create a new object.
-#
-# See _init() for an argument description.
-#
+use Carp qw(croak); 
+
+
 sub new {
     # Derived classes should not need to override this class; override _init()
     # to handle class-specific initialization.
     my $class = shift @_;
-    $class ne __PACKAGE__ or die "${class} is an abstract class";
     my $self = bless({}, $class);
     $self->_init(@_);
     return $self;
 }
 
-# Add one or more filters to the writer.
-#
-# A filter is a sub that takes a record (as a hash reference) as its only
-# argument and returns that record (potentially modified) or undef to ignore 
-# the record.
-#
+
 sub filter {
     # This does not affect class filters.
     my $self = shift @_;
@@ -39,8 +28,7 @@ sub filter {
     return;
 }
 
-# Write the next filtered record to the output stream. 
-#
+
 sub write {
     my $self = shift @_;
     my ($record) = @_;
@@ -54,8 +42,7 @@ sub write {
     return;
 }
 
-# Write records to the stream.
-#
+
 sub dump {
     my $self = shift @_;
     my ($records) = @_;
@@ -65,12 +52,7 @@ sub dump {
     return;
 }
 
-# Initialize this object.
-#
-# This is called by new() to do the real work when an object is created.
-# Derived classes may override this as necessary, but must make sure to call it
-# to initialize the base class, e.g. SUPER::_init()
-#
+
 sub _init {
     # Class filters are always applied before any user filters. Derived classes
     # can use these to do any preliminary data manipulation after the record is
@@ -81,13 +63,150 @@ sub _init {
     return;
 }
 
-# Put a formatted record into the output stream.
-#
-# This must be implemented by child classes to accept a data record as a hash
-# reference and write it to the output stream.
-#
+
 sub _put {
-    die "abstract method ${\(caller(0))[3]} not implemented";
+    # Write a single record to output. This is called after the record has been
+    # passed through all filters.
+    croak "abstract method not implemented";
 }
 
 1;
+
+__END__
+
+=pod
+
+=encoding utf8
+
+
+=head1 NAME
+
+Serial::Core::_Writer - Abstract base class for serial data writers.
+
+
+=head1 SYNOPSIS
+
+    use base qw(Serial::Core::_Writer);
+    
+    sub _init {
+        my $self = shift @_;
+        $self->SUPER::_init();
+        # Define derived class attributes.
+        return;
+    }
+    
+    sub _put {
+        my $self = shift @_;
+        my ($record) = @_;
+        # Write a formatted record to the output stream.
+        return;
+    }
+
+
+=head1 DESCRIPTION
+
+This is an abstract base class for implementing serial data writers. A writer
+converts records consisting of named data fields to sequential output, I<e.g.>
+lines of text. Output can be passed through one or more filters to modify 
+and/or reject each record.
+
+Derived classes should override the B<_init()> method as necessary, and must
+implement a B<_put()> method (see L</PRIVATE METHODS>).
+
+
+=head1 PUBLIC METHODS
+
+All derived classes will have the following interface.
+
+=head2 B<new()>
+
+Class method that returns a new reader of the appropriate type.
+
+=head2 B<filter()>
+
+Add one or more filters to the writer, or call without any arguments to clear
+all filters. 
+
+=head3 Positional Arguments
+
+=over
+
+=item 
+
+[B<\&filter1, ...>]
+
+A filter is any C<sub> that accepts a record as its only argument and returns 
+a record (as a hashref) or C<undef> to drop the record from the input sequence.
+Records are passed through each filter in the order they were added. A record 
+is dropped as soon as any filter returns C<undef>. Thus, it is more efficient 
+to order filters from most to least exclusive.
+
+=back
+
+=head2 B<write()>
+
+Write a filtered record to the output stream.
+
+=head3 Positional Arguments
+
+=over
+
+=item 
+
+B<\%record>
+
+The record to write. The record will be passed through all filters before being 
+written.
+
+=back
+
+=head2 B<dump()>
+
+Write a sequence of records to the output stream.
+
+=head3 Positional Arguments
+
+=over
+
+=item 
+
+B<\%record1, ...>
+
+One or more records to write. Each record will be passed through all filters 
+before being written.
+
+=back
+
+
+=head1 PRIVATE METHODS
+
+These methods are for implementing derived classes.
+
+=head2 B<_init()>
+
+This is called by B<new()> to initialize the new object. Derived classes should 
+override this to do any class-specific initialization.
+
+=head3 Arguments
+
+This method is called using any arguments passed to B<new()>.
+
+=head2 B<_put()>
+
+This must be implemented by derived classes to format a record and write it to
+the output stream.
+
+=head3 Positional Arguments
+
+=over
+
+=item 
+
+B<\%record>
+
+The record to write.
+
+=back
+
+
+=cut

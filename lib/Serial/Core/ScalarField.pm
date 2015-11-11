@@ -4,10 +4,6 @@ use strict;
 use warnings;
 
 
-## Create a new object.
-##
-## See _init() for an argument description.
-##
 sub new {
     # Derived classes should not need to override this class; override _init()
     # to handle class-specific initialization.
@@ -17,8 +13,7 @@ sub new {
     return $self;
 }
 
-## Convert a string token to a scalar value.
-##
+
 sub decode {
     my $self = shift @_;
     my ($token) = @_;
@@ -30,11 +25,7 @@ sub decode {
     return $token eq '' ? $self->{_default} : $token
 }
 
-## Convert a scalar value to a string token.
-##
-## Fixed-width fields are padded on the left or trimmed on the right to fit
-## within the allotted field width.
-##
+
 sub encode {
     my $self = shift @_;
     my ($value) = @_;
@@ -46,17 +37,14 @@ sub encode {
         $value = $self->{_quote}.$value.$self->{_quote};
     }
     if ($self->{_strfmt}) {
-        # Fixed-width formatting.
+        # Fixed-width formatting. The value is padded on the left or trimmed on
+        # on the right to fit the alotted width. 
         $value = sprintf $self->{_strfmt}, substr($value, 0, $self->{width});
     }
     return $value;
 }
 
-## Initialize this object.
-##
-## A ScalarField is initialized with a name, a position, and an optional 
-## sprintf format string.
-##
+
 sub _init {
     # This is called by new() to do the real work when an object is created.
     # Derived classes may override this as necessary.
@@ -83,9 +71,10 @@ __END__
 
 =encoding utf8
 
+
 =head1 NAME
 
-Serial::Core::ScalarField - define a scalar data field
+Serial::Core::ConstField - Define a scalar field.
 
 
 =head1 SYNOPSIS
@@ -93,43 +82,50 @@ Serial::Core::ScalarField - define a scalar data field
     use Serial::Core;
 
     my @fields = (
+        # Delimited fields have an index position.
         Serial::Core::ScalarField->new($name, $pos),
         ...
     );
     my $reader = new Serial::Core::DelimitedReader($stream, \@fields);
+    my $writer = new Serial::Core::DelimitedWriter($stream, \@fields, ',');
 
     my @fields = (
+        # Fixed-width fields have a substring position.
         Serial::Core::ScalarField->new($name, [$beg, $len]),
         ...
     );
     my $reader = new Serial::Core::FixedWidthReader($stream, \@fields);
+    my $writer = new Serial::Core::FixedWidthWriter($stream, \@fields);
 
 
 =head1 DESCRIPTION
 
-A I<ScalarField> maps a single input/output token to a data field. I<Reader>s
-and I<Writer>s are initialized using a list of fields that defines the layout
-of their data stream.
+Readers and writers are initialized using a list of fields that defines the 
+layout of their data stream. A B<ScalarField> maps a scalar value (I<e.g.> a 
+string or a number) to a data field.
 
-=head2 CLASS METHODS
+
+=head1 PUBLIC METHODS
+
+These methods define the B<ScalarField> interface.
+
+=head2 B<new()>
+
+Class method that returns a new B<ScalarField>.
+
+=head3 Positional Arguments
 
 =over
 
-=item new($name, $pos, fmt => '%s', quote => '', default => undef)
+=item 
 
-Return a new I<ScalarField> object.
+B<$name> 
 
-=back
+Used to refer to the field in a data record, e.g. C<%record{$name}>.
 
-=head3 Required Positional Arguments
+=item 
 
-=over
-
-=item I<name> 
-
-Used to refer to the field in a data record, e.g. C<$record-E<gt>{$name}>.
-
-=item I<pos>
+B<$pos | \@pos>
 
 The position of the field in the input/output line. For delimited data this is 
 the field index (starting at 0), and for fixed-width data this is the substring 
@@ -139,42 +135,83 @@ trimmed on the right to fit their allotted width on output.
 
 =back
 
-=head3 Optional Named Arguments
+=head3 Named Options
 
 =over
 
-=item I<fmt>
+=item 
 
-A C<printf()> format string that is used by a I<Writer> for formatted output
-(it has no effect on input). Specifying a format width is optional, but for
-fixed-width fields a format width smaller than the field width can be used to
-control spacing between fields. 
+B<fmt=E<gt>$fmt>
 
-=item I<quote>
+A L<sprintf> format string that is used for formatted output (it has no effect
+on input). Specifying a format width is optional, but for fixed-width fields a 
+format width smaller than the field width can be used to specify whitespace 
+between fields. 
 
-Specify a I<quote> character to strip input of leading/trailing quotes and to 
-automatically quote output. 
+=item 
 
-=item I<default>
+B<quote=E<gt>$quote>
 
-Specify a default value to use for null fields. This is used on input if the 
-field is blank and on output if the field is not defined in the data record.
+A quote character to strip on input and add to output. 
+
+=item 
+
+B<default=E<gt>$default>
+
+A value to use for null fields. This is used on input if the field is blank and 
+on output if the field is missing or defined as C<undef>.
 
 =back
 
-=head2 OBJECT METHODS
+=head2 B<decode()>
 
-The object methods are used by I<Reader>s and I<Writer>s; there is no need to
-access a I<ScalarField> object directly.
+Object method that converts a string token to a data field. This is used by
+readers and normally does not need to be called in user code.
 
-=head2 OBJECT ATTRIBUTES
+=head2 B<encode()>
 
-The object attributes are used by I<Reader>s and I<Writer>s; there is no need 
-to access a I<ScalarField> object directly.
+Object method that converts a data field to a string token. This is used by
+writers and normally does not need to be called in user code.
 
 
-=head1 EXPORTS
+=head1 PUBLIC ATTRIBUTES
 
-The I<Serial::Core> library makes this class available by default.
+=head2 B<name>
+
+The name assigned to this field. This is used by readers and writers and 
+normally does not need to be used directly in user code.
+
+=head2 B<pos>
+
+The position of this field in each line of text. For a delimited field this is
+a single index, and for a fixed-width field this is a substring specifier. This
+is used by readers and writers and normally does not need to be used directly 
+in user code.
+
+=head2 B<width>
+
+The width of this field. For a delimited field this is always 1, and for a 
+fixed-width field this is the string length (inclusive of any whitespace). This
+is used by readers and writers and normally does not need to be used directly 
+in user code.
+
+
+=head1 SEE ALSO
+
+=over
+
+=item L<Serial::Core::ConstField> 
+
+=item L<Serial::Core::TimeField>
+
+=item L<Serial::Core::DelimitedReader>
+
+=item L<Serial::Core::DelimitedWriter>
+
+=item L<Serial::Core::FixedWidthReader>
+
+=item L<Serial::Core::FixedWidthWriter>
+
+=back
 
 =cut

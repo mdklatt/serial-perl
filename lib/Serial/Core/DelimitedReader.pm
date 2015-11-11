@@ -1,19 +1,10 @@
-# A reader for tabular data consisting of character-delimited fields.
-#
-# The position of each scalar field is given as an integer index, and the
-# position of an array field is a [beg, len] array where the end is undef for
-# a variable-length array.
-#
 package Serial::Core::DelimitedReader;
 use base qw(Serial::Core::_TabularReader);
 
 use strict;
 use warnings;
 
-# Initialize this object.
-#
-# If no delimiter is specified each input line will be split on whitespace.
-#
+
 sub _init {
     my $self = shift @_;
     my ($stream, $fields, %opts) = @_;
@@ -22,8 +13,7 @@ sub _init {
     return;
 }
 
-# Split a line of text into an array of tokens.
-#
+
 sub _split {
     my $self = shift @_;
     my ($line) = @_;
@@ -50,123 +40,135 @@ __END__
 
 =head1 NAME
 
-Serial::Core::DelimitedReader - read character-delimited tabular data
+Serial::Core::DelimitedReader - Read character-delimited tabular data.
 
 
 =head1 SYNOPSIS
 
     use Serial::Core;
-
-    my $reader = Serial::Core::DelimitedReader->new($stream, $fields);
+    
+    my $reader = Serial::Core::DelimitedReader->new($stream, \@fields);
+    
     $reader->filter(sub {
-        # Add a callback for input preprocessing.
         my ($record) = @_;
-        ...
-        return $record;  # or undef to drop this record
-    };);
+        # Modify record as necessary.
+        return $record;  # or return undef to drop record from the input sequence
+    });
+    
     while (my $record = $reader->next()) {
         # Process each record.
-        ...
     }
+    
+    my @records = $reader->read(count=>10);  # read at most 10 records
 
 
 =head1 DESCRIPTION
 
-A I<DelimitedReader> reads character-delimited tabular data where each field
-occupies the same position in each input line. One line of input corresponds 
+A B<DelimitedReader> reads character-delimited tabular data where each field
+occupies the same position in every input line. One line of input corresponds 
 to one data record. 
 
-=head2 CLASS METHODS
+
+=head1 PUBLIC METHODS
+
+These methods define the B<DelimitedReader> interface.
+
+=head2 B<new()>
+
+Class method that returns a new B<DelimitedReader>.
+
+=head3 Positional Arugments
 
 =over
 
-=item new($stream, $fields, delim => undef, endl => $\)
+=item 
 
-Return a new I<DelimitedReader> object.
+B<$stream>
+
+A stream handle opened for input.
+
+=item
+
+B<\@fields>
+
+An array of field objects. A field has a name, a position within each line of
+input, and encoding and decoding methods, I<c.f.> L<Serial::Core::ScalarField>. 
 
 =back
 
-=head3 Required Positional Arguments
+=head3 Named Options
 
 =over
 
-=item I<stream> 
+=item 
 
-A handle to the input stream, which is any object for which 
-C<E<lt>$streamE<gt>> returns a line of input.
+B<delim=E<gt>$delim>
 
-=item I<fields>
+Field delimiter to use; the default is to split lines on any whitespace.
 
-An arrayref of one or more field definitions that define the input layout.
+=item 
+
+B<endl=E<gt>$endl>
+
+Endline character to use when reading input lines; defaults to C<$E<sol>>.
 
 =back
 
-=head3 Optional Named Arguments
+=head2 B<filter()>
+
+Add one or more filters to the reader, or call without any arguments to clear
+all filters. 
+
+=head3 Positional Arguments
 
 =over
 
-=item I<delim>
+=item 
 
-Specify the field delimiter to use; by default, input lines are split on any 
-whitespace.
+[B<\&filter1, ...>]
 
-=item I<endl>
-
-Specify the endline character(s) to use.
+A filter is any C<sub> that accepts a record as its only argument and returns 
+a record (as a hashref) or C<undef> to drop the record from the input sequence.
+Records are passed through each filter in the order they were added. A record 
+is dropped as soon as any filter returns C<undef>. Thus, it is more efficient 
+to order filters from most to least exclusive.
 
 =back
 
-=head2 OBJECT METHODS
+=head2 B<next()>
+
+Return the next filtered input record or C<undef> on EOF.
+
+=head2 B<read()>
+
+Return all filtered input records as an array.
+
+=head3 Named Options
 
 =over
 
-=item filter([$callback1, $callback2, ...])
+=item 
 
-Add one or more filters to the reader, or without any arguments clear all
-filters. Filters are applied to each incoming record in the order they were
-added; filtering stops as soon as any filter drops the record.
+B<count=E<gt>$count>
 
-=back
-
-=head3 Optional Positional Arguments
-
-=over
-
-=item I<callback ...> 
-
-Specify callbacks to use as filters. A filter takes a data record as its only
-argument and returns that record, a new/modified record, or C<undef> to drop
-the record. 
+Return B<$count> records at most.
 
 =back
-
-=over
-
-=item next()
-
-Return the next parsed and filtered record from the input stream. Each record 
-is a hash keyed by the field names. On EOF C<undef> is returned, so this can be 
-used in a C<while> loop.
-
-=item read()
-
-Return all records from the stream as an array or arrayref.
-
-=back
-
-
-=head1 EXPORTS
-
-The I<Serial::Core> library makes this class available by default.
 
 
 =head1 SEE ALSO
 
 =over
 
-=item ScalarField class
+=item L<Serial::Core::ConstField>
 
-=item ConstField class
+=item L<Serial::Core::ScalarField> 
+
+=item L<Serial::Core::TimeField>
+
+=item L<Serial::Core::FieldFilter>
+
+=item L<Serial::Core::RangeFilter>
 
 =back
 

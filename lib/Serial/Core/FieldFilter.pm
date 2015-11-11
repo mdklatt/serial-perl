@@ -3,12 +3,7 @@ use base qw(Serial::Core::_RecordFilter);
 use strict;
 use warnings;
 
-# Initialize this object.
-#
-# A FieldFilter is initialized with a field, an array of values, and an
-# optional 'blacklist' keyword argument that controls if this is a blacklist
-# or a whitelist (default is whitelist).
-#
+
 sub _init {
     # This is called by new() to do the real work when an object is created.
     # Derived classes may override this as necessary.
@@ -19,11 +14,13 @@ sub _init {
     return;
 }
 
+
 sub _match {
     my $self = shift @_;
     my ($value) = @_;
     return $self->{_values}{$value};
 }
+
 
 1;
 
@@ -36,66 +33,86 @@ __END__
 
 =head1 NAME
 
-Serial::Core::FieldFilter - filter records using a set of values
+Serial::Core::FieldFilter - Filter a data field against a set of values.
 
 
 =head1 SYNOPSIS
 
     use Serial::Core;
-
-    my $filter = new Serial::Core::FieldFilter($field, $values);
-    $reader->filter($filter);
+    
+    my @values = ('foo', 'bar');
+    my $reader = Serial::Core::FixedWidthReader->new($stream, \@fields);
+    $reader->filter(Serial::Core::FieldFilter->new('field', \@values));
 
 
 =head1 DESCRIPTION
 
-A I<FieldFilter> is a callback that can be used with the C<filter()> method of 
-a I<Reader> or I<Writer>. Field values are matched against a set of values, and
-matching records can be whitelisted or blacklisted. 
+A B<FieldFilter> filters a record by matching a data field against a set of
+values. The filter can act as either a whitelist (default) or blacklist to 
+accept or reject any matching records, respectively. The record is not 
+modified. A filter can be attached to readers and writers using their 
+C<filter()> method.
 
-=head2 CLASS METHODS
 
-=over
+=head1 PUBLIC METHODS
 
-=item new($field, $values, blacklist => 0)
+These methods define the B<FieldFilter> interface.
 
-Create a new I<FieldFilter> object.
+=head2 B<new()>
 
-=back
+Class method that returns a new B<FieldFilter>.
 
-=head3 Required Positional Arguments
-
-=over
-
-=item I<field> 
-
-The field name to match.
-
-=item I<value>
-
-An arrayref specifying the values to match against.
-
-=back
-
-=head3 Optional Named Arguments
+=head3 Positional Arugments
 
 =over
 
-=item I<blacklist>
+=item 
 
-Specify if matching records will be whitelisted or blacklisted. Set this to a
-true value to enable blacklisting.
+B<$field>
+
+The data field name to use with this filter.
+
+=item
+
+B<\@values>
+
+An array of values to match against. 
 
 =back
 
-=head2 OBJECT METHODS
+=head3 Named Options
 
-The object methods are used by I<Reader>s and I<Writer>s; there is no need to
-access a I<FieldFilter> object directly.
+=over
+
+=item 
+
+B<blacklist=E<gt>$blacklist>
+
+Boolean value to control blacklisting; defaults to false.
+
+=back
+
+=head2 B<&{} operator>
+
+The class overloads B<&{}> so that it can be used as a subroutine reference.
+This is used by readers and writers and normally does not need to be called in
+user code.
 
 
-=head1 EXPORTS
+=head1 SEE ALSO
 
-The I<Serial::Core> library makes this class available by default.
+=over
+
+=item L<Serial::Core::RangeFilter>
+
+=item L<Serial::Core::DelimitedReader>
+
+=item L<Serial::Core::DelimitedWriter>
+
+=item L<Serial::Core::FixedWidthReader>
+
+=item L<Serial::Core::FixedWidthWriter>
+
+=back
 
 =cut

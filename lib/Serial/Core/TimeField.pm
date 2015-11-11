@@ -1,12 +1,12 @@
 package Serial::Core::TimeField;
 use base qw(Serial::Core::ScalarField);
+
 use strict;
 use warnings;
 
 use Time::Piece;
 
-# Convert a string token to a scalar value.
-#
+
 sub decode {
     my $self = shift @_;
     my ($token) = @_;
@@ -18,11 +18,6 @@ sub decode {
 }
 
 
-# Convert a scalar value to a string token.
-#
-# Fixed-width fields are padded on the left or trimmed on the right to fit
-# within the allotted field width.
-#
 sub encode {
     my $self = shift @_;
     my ($value) = @_;
@@ -41,11 +36,7 @@ sub encode {
     return $token;
 }
 
-# Initialize this object.
-#
-# A TimeField is initialized with a name, a position, and a strftime format
-# string.
-#
+
 sub _init {
     # This is called by new() to do the real work when an object is created.
     my $self = shift @_;
@@ -71,9 +62,10 @@ __END__
 
 =encoding utf8
 
+
 =head1 NAME
 
-Serial::Core::TimeField - define a time field
+Serial::Core::TimeField - Define a date/time field.
 
 
 =head1 SYNOPSIS
@@ -81,102 +73,127 @@ Serial::Core::TimeField - define a time field
     use Serial::Core;
 
     my @fields = (
-        Serial::Core::TimeField->new('date', [0, 10], '%Y-%m-%d'),
+        # Delimited fields have an index position.
+        Serial::Core::TimeField->new($name, $pos, $fmt),
         ...
     );
+    my $reader = new Serial::Core::DelimitedReader($stream, \@fields);
+    my $writer = new Serial::Core::DelimitedWriter($stream, \@fields, ',');
+
+    my @fields = (
+        # Fixed-width fields have a substring position.
+        Serial::Core::TimeField->new($name, [$beg, $len]),
+        ...
+    );
+    my $reader = new Serial::Core::FixedWidthReader($stream, \@fields);
+    my $writer = new Serial::Core::FixedWidthWriter($stream, \@fields);
 
 
 =head1 DESCRIPTION
 
-A I<TimeField> maps a single input/output token to a Time::Piece field. 
-I<Reader>s and I<Writer>s are initialized using a list of fields that defines
-the layout of their data stream.
+Readers and writers are initialized using a list of fields that defines the 
+layout of their data stream. A B<TimeField> maps a B<Time::Piece> value to a 
+data field.
 
-=head2 CLASS METHODS
+
+=head1 PUBLIC METHODS
+
+These methods define the B<TimeField> interface.
+
+=head2 B<new()>
+
+Class method that returns a new B<TimeField>.
+
+=head3 Positional Arguments
 
 =over
 
-=item new($name, $pos, $fmt, default => undef)
+=item 
 
-Return a new I<TimeField> object.
+B<$name> 
 
-=back
+Used to refer to the field in a data record, e.g. C<%record{$name}>.
 
-=head3 Positional Arguments (Required)
+=item 
 
-=over
-
-=item I<name> 
-
-Used to refer to the field in a data record, e.g. C<$record-E<gt>{$name}>.
-
-=item I<pos>
+B<$pos | \@pos>
 
 The position of the field in the input/output line. For delimited data this is 
-the field index (starting at 0), and for fixed-width data this is the substring
+the field index (starting at 0), and for fixed-width data this is the substring 
 occupied by the field as given by its offset from 0 and total width (inclusive 
 of any spacing between fields). Fixed-width fields are padded on the left or 
 trimmed on the right to fit their allotted width on output.
 
-=item I<fmt>
+=item 
 
-A strftime-compatible format string.
+B<$fmt>
 
+A L<strftime> format string that is used to parse input and format output.
 
 =back
 
-=head3 Named Arguments (Optional)
+=head3 Named Options
 
 =over
 
-=item I<default>
+=item 
 
-Specify a default value to use for null fields. This is used on input if the 
-field is blank and on output if the field is not defined in the data record.
+B<$default>
+
+A value to use for null fields. This is used on input if the field is blank and 
+on output if the field is missing or defined as C<undef>.
 
 =back
 
-=head2 OBJECT METHODS
+=head2 B<decode()>
 
-The object methods are used by I<Reader>s and I<Writer>s; there is no need to
-access an I<TimeField> object directly.
+Object method that converts a string token to a data field. This is used by
+readers and normally does not need to be called in user code.
+
+=head2 B<encode()>
+
+Object method that converts a data field to a string token. This is used by
+writers and normally does not need to be called in user code.
+
+
+=head1 PUBLIC ATTRIBUTES
+
+=head2 B<name>
+
+The name assigned to this field. This is used by readers and writers and 
+normally does not need to be used directly in user code.
+
+=head2 B<pos>
+
+The position of this field in each line of text. For a delimited field this is
+a single index, and for a fixed-width field this is a substring specifier. This
+is used by readers and writers and normally does not need to be used directly 
+in user code.
+
+=head2 B<width>
+
+The width of this field. For a delimited field this is always 1, and for a 
+fixed-width field this is the string length (inclusive of any whitespace). This
+is used by readers and writers and normally does not need to be used directly 
+in user code.
+
+
+=head1 SEE ALSO
 
 =over
 
-=item C<decode>
+=item L<Serial::Core::ConstField> 
 
-Convert a string token to a Time::Piece value. If the string is empty, the
-field's default value is used.
+=item L<Serial::Core::ScalarField> 
 
-=item C<encode>
+=item L<Serial::Core::DelimitedReader>
 
-Convert a Time::Piece value to a string token. If the value is null, the 
-field's default value is encoded. For fixed-width fields, the string is padded
-on the left or trimmed on he right to fit within the field.
+=item L<Serial::Core::DelimitedWriter>
 
-=back
+=item L<Serial::Core::FixedWidthReader>
 
-=head2 OBJECT ATTRIBUTES
-
-The object attributes are used by I<Reader>s and I<Writer>s; there is no need 
-to access a I<TimeField> object directly.
-
-=over
-
-=item C<name>
-
-The field name.
-
-=item C<pos>
-
-The position of the field within the record, either an index or a 
-(begin, length) tuple for a fixed-width field.
+=item L<Serial::Core::FixedWidthWriter>
 
 =back
-
-
-=head1 EXPORTS
-
-The I<Serial::Core> library makes this class available by default.
 
 =cut
