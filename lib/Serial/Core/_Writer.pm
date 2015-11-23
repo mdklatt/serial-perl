@@ -131,9 +131,7 @@ all filters.
 
 =over
 
-=item 
-
-[B<\&filter1, ...>]
+=item [B<\\&filter1, ...>]
 
 A filter is any C<sub> that accepts a record as its only argument and returns 
 a record (as a hashref) or C<undef> to drop the record from the input sequence.
@@ -151,9 +149,7 @@ Write a filtered record to the output stream.
 
 =over
 
-=item 
-
-B<\%record>
+=item B<\\%record>
 
 The record to write. The record will be passed through all filters before being 
 written.
@@ -168,11 +164,9 @@ Write a sequence of records to the output stream.
 
 =over
 
-=item 
+=item B<\\@records>
 
-B<\%record1, ...>
-
-One or more records to write. Each record will be passed through all filters 
+An array of records to write. Each record will be passed through all filters 
 before being written.
 
 =back
@@ -200,9 +194,7 @@ the output stream.
 
 =over
 
-=item 
-
-B<\%record>
+=item B<\\%record>
 
 The record to write.
 

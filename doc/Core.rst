@@ -10,7 +10,7 @@ NAME
 ****
 
 
-Serial::Core - read and write sequential record-oriented data
+Serial::Core - Read and write sequential record-oriented data.
 
 
 ********

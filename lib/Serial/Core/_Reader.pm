@@ -137,9 +137,7 @@ all filters.
 
 =over
 
-=item 
-
-[B<\&filter1, ...>]
+=item [B<\\&filter1, ...>]
 
 A filter is any C<sub> that accepts a record as its only argument and returns 
 a record (as a hashref) or C<undef> to drop the record from the input sequence.
@@ -161,9 +159,7 @@ Return all filtered input records as an array.
 
 =over
 
-=item 
-
-B<count=E<gt>$count>
+=item B<count=E<gt>$count>
 
 Return B<$count> records at most.
 

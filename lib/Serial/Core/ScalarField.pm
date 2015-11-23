@@ -74,7 +74,7 @@ __END__
 
 =head1 NAME
 
-Serial::Core::ConstField - Define a scalar field.
+Serial::Core::ScalarField - Define a scalar field.
 
 
 =head1 SYNOPSIS
@@ -117,15 +117,11 @@ Class method that returns a new B<ScalarField>.
 
 =over
 
-=item 
-
-B<$name> 
+=item B<$name> 
 
 Used to refer to the field in a data record, e.g. C<%record{$name}>.
 
-=item 
-
-B<$pos | \@pos>
+=item B<$pos | \\@pos>
 
 The position of the field in the input/output line. For delimited data this is 
 the field index (starting at 0), and for fixed-width data this is the substring 
@@ -139,24 +135,18 @@ trimmed on the right to fit their allotted width on output.
 
 =over
 
-=item 
-
-B<fmt=E<gt>$fmt>
+=item B<fmt=E<gt>$fmt>
 
 A L<sprintf> format string that is used for formatted output (it has no effect
 on input). Specifying a format width is optional, but for fixed-width fields a 
 format width smaller than the field width can be used to specify whitespace 
 between fields. 
 
-=item 
-
-B<quote=E<gt>$quote>
+=item B<quote=E<gt>$quote>
 
 A quote character to strip on input and add to output. 
 
-=item 
-
-B<default=E<gt>$default>
+=item B<default=E<gt>$default>
 
 A value to use for null fields. This is used on input if the field is blank and 
 on output if the field is missing or defined as C<undef>.

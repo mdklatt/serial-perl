@@ -66,15 +66,11 @@ Class method that returns a new B<FieldFilter>.
 
 =over
 
-=item 
-
-B<$field>
+=item B<$field>
 
 The data field name to use with this filter.
 
-=item
-
-B<\@values>
+=item B<\\@values>
 
 An array of values to match against. 
 
@@ -84,9 +80,7 @@ An array of values to match against.
 
 =over
 
-=item 
-
-B<blacklist=E<gt>$blacklist>
+=item B<blacklist=E<gt>$blacklist>
 
 Boolean value to control blacklisting; defaults to false.
 

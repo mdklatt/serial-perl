@@ -10,7 +10,7 @@ NAME
 ****
 
 
-Serial::Core::TimeField - define a time field
+Serial::Core::TimeField - Define a date/time field.
 
 
 ********
@@ -24,9 +24,20 @@ SYNOPSIS
      use Serial::Core;
  
      my @fields = (
-         Serial::Core::TimeField->new('date', [0, 10], '%Y-%m-%d'),
+         # Delimited fields have an index position.
+         Serial::Core::TimeField->new($name, $pos, $fmt),
          ...
      );
+     my $reader = new Serial::Core::DelimitedReader($stream, \@fields);
+     my $writer = new Serial::Core::DelimitedWriter($stream, \@fields, ',');
+ 
+     my @fields = (
+         # Fixed-width fields have a substring position.
+         Serial::Core::TimeField->new($name, [$beg, $len]),
+         ...
+     );
+     my $reader = new Serial::Core::FixedWidthReader($stream, \@fields);
+     my $writer = new Serial::Core::FixedWidthWriter($stream, \@fields);
 
 
 
@@ -35,114 +46,144 @@ DESCRIPTION
 ***********
 
 
-A \ *TimeField*\  maps a single input/output token to a Time::Piece field. 
-\ *Reader*\ s and \ *Writer*\ s are initialized using a list of fields that defines
-the layout of their data stream.
+Readers and writers are initialized using a list of fields that defines the 
+layout of their data stream. A \ **TimeField**\  maps a \ **Time::Piece**\  value to a 
+data field.
 
-CLASS METHODS
+
+**************
+PUBLIC METHODS
+**************
+
+
+These methods define the \ **TimeField**\  interface.
+
+\ **new()**\ 
 =============
 
 
+Class method that returns a new \ **TimeField**\ .
 
-new($name, $pos, $fmt, default => undef)
+Positional Arguments
+--------------------
+
+
+
+\ **$name**\ 
  
- Return a new \ *TimeField*\  object.
- 
-
-
-Positional Arguments (Required)
--------------------------------
-
-
-
-\ *name*\ 
- 
- Used to refer to the field in a data record, e.g. \ ``$record->{$name}``\ .
+ Used to refer to the field in a data record, e.g. \ ``%record{$name}``\ .
  
 
 
-\ *pos*\ 
+\ **$pos | \\@pos**\ 
  
  The position of the field in the input/output line. For delimited data this is 
- the field index (starting at 0), and for fixed-width data this is the substring
+ the field index (starting at 0), and for fixed-width data this is the substring 
  occupied by the field as given by its offset from 0 and total width (inclusive 
  of any spacing between fields). Fixed-width fields are padded on the left or 
  trimmed on the right to fit their allotted width on output.
  
 
 
-\ *fmt*\ 
+\ **$fmt**\ 
  
- A strftime-compatible format string.
- 
-
-
-
-Named Arguments (Optional)
---------------------------
-
-
-
-\ *default*\ 
- 
- Specify a default value to use for null fields. This is used on input if the 
- field is blank and on output if the field is not defined in the data record.
+ A strftime format string that is used to parse input and format output.
  
 
 
 
-
-OBJECT METHODS
-==============
-
-
-The object methods are used by \ *Reader*\ s and \ *Writer*\ s; there is no need to
-access an \ *TimeField*\  object directly.
+Named Options
+-------------
 
 
-\ ``decode``\ 
+
+\ **$default**\ 
  
- Convert a string token to a Time::Piece value. If the string is empty, the
- field's default value is used.
- 
-
-
-\ ``encode``\ 
- 
- Convert a Time::Piece value to a string token. If the value is null, the 
- field's default value is encoded. For fixed-width fields, the string is padded
- on the left or trimmed on he right to fit within the field.
- 
-
-
-
-OBJECT ATTRIBUTES
-=================
-
-
-The object attributes are used by \ *Reader*\ s and \ *Writer*\ s; there is no need 
-to access a \ *TimeField*\  object directly.
-
-
-\ ``name``\ 
- 
- The field name.
- 
-
-
-\ ``pos``\ 
- 
- The position of the field within the record, either an index or a 
- (begin, length) tuple for a fixed-width field.
+ A value to use for null fields. This is used on input if the field is blank and 
+ on output if the field is missing or defined as \ ``undef``\ .
  
 
 
 
 
-*******
-EXPORTS
-*******
+\ **decode()**\ 
+================
 
 
-The \ *Serial::Core*\  library makes this class available by default.
+Object method that converts a string token to a data field. This is used by
+readers and normally does not need to be called in user code.
+
+
+\ **encode()**\ 
+================
+
+
+Object method that converts a data field to a string token. This is used by
+writers and normally does not need to be called in user code.
+
+
+
+*****************
+PUBLIC ATTRIBUTES
+*****************
+
+
+\ **name**\ 
+============
+
+
+The name assigned to this field. This is used by readers and writers and 
+normally does not need to be used directly in user code.
+
+
+\ **pos**\ 
+===========
+
+
+The position of this field in each line of text. For a delimited field this is
+a single index, and for a fixed-width field this is a substring specifier. This
+is used by readers and writers and normally does not need to be used directly 
+in user code.
+
+
+\ **width**\ 
+=============
+
+
+The width of this field. For a delimited field this is always 1, and for a 
+fixed-width field this is the string length (inclusive of any whitespace). This
+is used by readers and writers and normally does not need to be used directly 
+in user code.
+
+
+
+********
+SEE ALSO
+********
+
+
+
+`Serial::Core::ConstField <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aConstField&mode=module>`_
+
+
+
+`Serial::Core::ScalarField <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aScalarField&mode=module>`_
+
+
+
+`Serial::Core::DelimitedReader <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aDelimitedReader&mode=module>`_
+
+
+
+`Serial::Core::DelimitedWriter <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aDelimitedWriter&mode=module>`_
+
+
+
+`Serial::Core::FixedWidthReader <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aFixedWidthReader&mode=module>`_
+
+
+
+`Serial::Core::FixedWidthWriter <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aFixedWidthWriter&mode=module>`_
+
+
 

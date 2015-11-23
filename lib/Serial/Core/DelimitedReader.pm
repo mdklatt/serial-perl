@@ -81,15 +81,11 @@ Class method that returns a new B<DelimitedReader>.
 
 =over
 
-=item 
-
-B<$stream>
+=item B<$stream>
 
 A stream handle opened for input.
 
-=item
-
-B<\@fields>
+=item B<\\@fields>
 
 An array of field objects. A field has a name, a position within each line of
 input, and encoding and decoding methods, I<c.f.> L<Serial::Core::ScalarField>. 
@@ -100,15 +96,11 @@ input, and encoding and decoding methods, I<c.f.> L<Serial::Core::ScalarField>.
 
 =over
 
-=item 
-
-B<delim=E<gt>$delim>
+=item B<delim=E<gt>$delim>
 
 Field delimiter to use; the default is to split lines on any whitespace.
 
-=item 
-
-B<endl=E<gt>$endl>
+=item B<endl=E<gt>$endl>
 
 Endline character to use when reading input lines; defaults to C<$E<sol>>.
 
@@ -123,9 +115,7 @@ all filters.
 
 =over
 
-=item 
-
-[B<\&filter1, ...>]
+=item [B<\\&filter1, ...>]
 
 A filter is any C<sub> that accepts a record as its only argument and returns 
 a record (as a hashref) or C<undef> to drop the record from the input sequence.
@@ -147,9 +137,7 @@ Return all filtered input records as an array.
 
 =over
 
-=item 
-
-B<count=E<gt>$count>
+=item B<count=E<gt>$count>
 
 Return B<$count> records at most.
 

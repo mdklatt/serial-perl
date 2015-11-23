@@ -107,9 +107,7 @@ user code.
 
 =over
 
-=item
-
-B<\%record>
+=item B<\\%record>
 
 A data record to match.
 
@@ -137,9 +135,7 @@ the filter condition.
 
 =over
 
-=item
-
-B<$value>
+=item B<$value>
 
 The value to test against the filter condition.
 

@@ -10,7 +10,7 @@ NAME
 ****
 
 
-Serial::Core::FixedWidthReader - read fixed-width tabular data
+Serial::Core::FixedWidthReader - Read fixed-width tabular data.
 
 
 ********
@@ -22,18 +22,20 @@ SYNOPSIS
 .. code-block:: perl
 
      use Serial::Core;
- 
-     my $reader = Serial::Core::FixedWidthReader->new($stream, $fields);
+     
+     my $reader = Serial::Core::FixedWidthReader->new($stream, \@fields);
+     
      $reader->filter(sub {
-         # Add a callback for input preprocessing.
          my ($record) = @_;
-         ...
-         return $record;  # or undef to drop this record
-     };);
+         # Modify record as necessary.
+         return $record;  # or return undef to drop record from the input sequence
+     });
+     
      while (my $record = $reader->next()) {
          # Process each record.
-         ...
      }
+     
+     my @records = $reader->read(count=>10);  # read at most 10 records
 
 
 
@@ -42,103 +44,105 @@ DESCRIPTION
 ***********
 
 
-A \ *FixedWidthReader*\  reads fixed-width tabular data where each field occupies
-the same character positions in each input line. One line of input corresponds 
-to one data record.
+A \ **FixedWidthReader**\  reads fixed-width tabular data where each field occupies
+the same column in every input line. One line of input corresponds to one data 
+record.
 
-CLASS METHODS
+
+**************
+PUBLIC METHODS
+**************
+
+
+These methods define the \ **FixedWidthReader**\  interface.
+
+\ **new()**\ 
 =============
 
 
+Class method that returns a new \ **FixedWidthReader**\ .
 
-new($stream, $fields, endl => $/)
+Positional Arugments
+--------------------
+
+
+
+\ **$stream**\ 
  
- Return a new \ *FixedWidthReader*\  object.
- 
-
-
-Required Positional Arguments
------------------------------
-
-
-
-\ *stream*\ 
- 
- A handle to the input stream, which is any object for which 
- \ ``<$stream>``\  returns a line of input.
+ A stream handle opened for input.
  
 
 
-\ *fields*\ 
+\ **\\@fields**\ 
  
- An arrayref of one or more field definitions that define the input layout.
+ An array of field objects. A field has a name, a position within each line of
+ input, and encoding and decoding methods, \ *c.f.*\  `Serial::Core::ScalarField <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aScalarField&mode=module>`_.
  
 
 
 
-Optional Named Arguments
-------------------------
+Named Options
+-------------
 
 
 
-\ *endl*\ 
+\ **endl => $endl**\ 
  
- Specify the endline character(s) to use.
+ Endline character to use when reading input lines; defaults to \ ``$sol``\ .
  
 
 
 
 
-OBJECT METHODS
+\ **filter()**\ 
+================
+
+
+Add one or more filters to the reader, or call without any arguments to clear
+all filters.
+
+Positional Arguments
+--------------------
+
+
+
+[\ **\\&filter1, ...**\ ]
+ 
+ A filter is any \ ``sub``\  that accepts a record as its only argument and returns 
+ a record (as a hashref) or \ ``undef``\  to drop the record from the input sequence.
+ Records are passed through each filter in the order they were added. A record 
+ is dropped as soon as any filter returns \ ``undef``\ . Thus, it is more efficient 
+ to order filters from most to least exclusive.
+ 
+
+
+
+
+\ **next()**\ 
 ==============
 
 
+Return the next filtered input record or \ ``undef``\  on EOF.
 
-filter([$callback1, $callback2, ...])
+
+\ **read()**\ 
+==============
+
+
+Return all filtered input records as an array.
+
+Named Options
+-------------
+
+
+
+\ **count => $count**\ 
  
- Add one or more filters to the reader, or without any arguments clear all
- filters. Filters are applied to each incoming record in the order they were
- added; filtering stops as soon as any filter drops the record.
- 
-
-
-Optional Positional Arguments
------------------------------
-
-
-
-\ *callback ...*\ 
- 
- Specify callbacks to use as filters. A filter takes a data record as its only
- argument and returns that record, a new/modified record, or \ ``undef``\  to drop
- the record.
+ Return \ **$count**\  records at most.
  
 
 
 
-next()
- 
- Return the next parsed and filtered record from the input stream. Each record 
- is a hash keyed by the field names. On EOF \ ``undef``\  is returned, so this can be 
- used in a \ ``while``\  loop.
- 
-
-
-read()
- 
- Return all records from the stream as an array or arrayref.
- 
-
-
-
-
-
-*******
-EXPORTS
-*******
-
-
-The \ *Serial::Core*\  library makes this class available by default.
 
 
 ********
@@ -147,11 +151,23 @@ SEE ALSO
 
 
 
-ScalarField class
+`Serial::Core::ConstField <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aConstField&mode=module>`_
 
 
 
-ConstField class
+`Serial::Core::ScalarField <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aScalarField&mode=module>`_
+
+
+
+`Serial::Core::TimeField <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aTimeField&mode=module>`_
+
+
+
+`Serial::Core::FieldFilter <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aFieldFilter&mode=module>`_
+
+
+
+`Serial::Core::RangeFilter <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aRangeFilter&mode=module>`_
 
 
 

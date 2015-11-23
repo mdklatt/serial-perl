@@ -70,18 +70,9 @@ Class method that returns a new B<RangeFilter>.
 
 =over
 
-=item 
-
-B<$field>
+=item B<$field>
 
 The data field name to use with this filter.
-
-=item
-
-B<\($min, $max)>
-
-The numeric range (inclusive) to match against. If either value is C<undef> the
-range is unlimited in that direction.
 
 =back
 
@@ -89,23 +80,17 @@ range is unlimited in that direction.
 
 =over
 
-=item 
-
-B<min=E<gt>$min>
+=item B<min=E<gt>$min>
 
 Minimum (inclusive) of the range to match; defaults to C<undef>, in which case
 the range is unbounded in this direction.
 
-=item 
-
-B<max=E<gt>$max>
+=item B<max=E<gt>$max>
 
 Maximum (inclusive) of the range to match; defaults to C<undef>, in which case
 the range is unbounded in this direction.
 
-=item 
-
-B<blacklist=E<gt>$blacklist>
+=item B<blacklist=E<gt>$blacklist>
 
 Boolean value to control blacklisting; defaults to false.
 

@@ -10,7 +10,7 @@ NAME
 ****
 
 
-Serial::Core::DelimitedWriter - write character-delimited tabular data
+Serial::Core::DelimitedWriter - Write character-delimited tabular data.
 
 
 ********
@@ -23,16 +23,17 @@ SYNOPSIS
 
      use Serial::Core;
  
-     my $writer = Serial::Core::DelimitedWriter->new($stream, $fields);
+     my $writer = Serial::Core::DelimitedWriter->new($stream, \@fields, $endl);
+ 
      $writer->filter(sub {
-         # Add a callback for output postprocessing.
          my ($record) = @_;
-         ...
-         return $record;  # or undef to drop this record
-     };);
-     foreach my $record (@records) {
-         $writer->write($record);
-     }
+         # Modify record as necessary.
+         return $record;  # or return undef to reject this record
+     });
+ 
+     $writer->write($record);  # write a record
+ 
+     $writer->dump(\@records);  # write all records
 
 
 
@@ -41,140 +42,125 @@ DESCRIPTION
 ***********
 
 
-A \ *DelimitedWriter*\  writes character-delimited tabular data where each field
-occupies the same position in each output line. One data record corresponds to
-one line of output.
+A \ **DelimitedWriter**\  writes character-delimited tabular data where each field
+occupies the same position in every output line. One data record corresponds
+to one line of output.
 
-CLASS METHODS
+
+**************
+PUBLIC METHODS
+**************
+
+
+These methods define the \ **DelimitedWriter**\  interface.
+
+\ **new()**\ 
 =============
 
 
+Class method that returns a new \ **DelimitedWriter**\ .
 
-new($stream, $fields, delim => "\t", endl => $/)
+Positional Arugments
+--------------------
+
+
+
+\ **$stream**\ 
  
- Return a new \ *DelimitedWriter*\  object.
- 
-
-
-Required Positional Arguments
------------------------------
-
-
-
-\ *stream*\ 
- 
- A handle to the output stream, which is any object for which 
- \ ``print $stream $line``\  writes an output line to the stream.
+ A stream handle opened for output.
  
 
 
-\ *fields*\ 
+\ **\\@fields**\ 
  
- An arrayref of one or more field definitions that define the output layout.
- 
-
-
-
-Optional Named Arguments
-------------------------
-
-
-
-\ *delim*\ 
- 
- Specify the field delimter to use.
+ An array of field objects. A field has a name, a position within each line of
+ input, and encoding and decoding methods, \ *c.f.*\  `Serial::Core::ScalarField <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aScalarField&mode=module>`_.
  
 
 
-\ *endl*\ 
+\ **$delim**\ 
  
- Specify the endline character(s) to use.
+ Field delimiter to use.
+ 
+
+
+
+Named Options
+-------------
+
+
+
+\ **endl=>$endl**\ 
+ 
+ Endline character to use when writing output lines; defaults to \ ``$sol``\ .
  
 
 
 
 
-OBJECT METHODS
+\ **filter()**\ 
+================
+
+
+Add one or more filters to the writer, or call without any arguments to clear
+all filters.
+
+Positional Arguments
+--------------------
+
+
+
+[\ **\\&filter1, ...**\ ]
+ 
+ A filter is any \ ``sub``\  that accepts a record as its only argument and returns 
+ a record (as a hashref) or \ ``undef``\  to stop the record from being written.
+ Records are passed through each filter in the order they were added. A record 
+ is dropped as soon as any filter returns \ ``undef``\ . Thus, it is more efficient 
+ to order filters from most to least exclusive.
+ 
+
+
+
+
+\ **write()**\ 
+===============
+
+
+Write a filtered record to the output stream.
+
+Positional Arguments
+--------------------
+
+
+
+\ **\\%record**\ 
+ 
+ The record to write. The record will be passed through all filters before being 
+ written.
+ 
+
+
+
+
+\ **dump()**\ 
 ==============
 
 
+Write a sequence of records to the output stream.
 
-filter([$callback1, $callback2, ...])
+Positional Arguments
+--------------------
+
+
+
+\ **\\@records**\ 
  
- Add one or more filters to the writer, or without any arguments clear all
- filters. Filters are applied to each outgoing record in the order they were
- added; filtering stops as soon as any filter drops the record.
- 
-
-
-Optional Positional Arguments
------------------------------
-
-
-
-\ *callback ...*\ 
- 
- Specify callbacks to use as filters. A filter takes a data record as its only
- argument and returns that record, a new/modified record, or \ ``undef``\  to drop
- the record.
+ An array of records to write. Each record will be passed through all filters 
+ before being written.
  
 
 
 
-write($record)
- 
- Write a filtered and formatted data record to the output stream.
- 
-
-
-
-Required Positional Arguments
------------------------------
-
-
-
-\ *record*\ 
- 
- The data record to write, where the record is a hashref keyed by field name.
- 
-
-
-
-dump($records)
- 
- Write multiple records to the output stream, eqivalent to:
- 
- 
- .. code-block:: perl
- 
-      foreach my $record (@$records) {
-          $writer->write($record);
-      }
- 
- 
-
-
-
-Required Positional Arguments
------------------------------
-
-
-
-\ *records*\ 
- 
- An arrayref of records to be written.
- 
-
-
-
-
-
-*******
-EXPORTS
-*******
-
-
-The \ *Serial::Core*\  library makes this class available by default.
 
 
 ********
@@ -183,11 +169,23 @@ SEE ALSO
 
 
 
-ScalarField class
+`Serial::Core::ConstField <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aConstField&mode=module>`_
 
 
 
-ConstField class
+`Serial::Core::ScalarField <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aScalarField&mode=module>`_
+
+
+
+`Serial::Core::TimeField <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aTimeField&mode=module>`_
+
+
+
+`Serial::Core::FieldFilter <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aFieldFilter&mode=module>`_
+
+
+
+`Serial::Core::RangeFilter <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aRangeFilter&mode=module>`_
 
 
 

@@ -14,10 +14,15 @@ Contents:
     ScalarField
     ConstField
     TimeField
+    _Reader
+    _TabularReader
     DelimitedReader
     DelimitedWriter
+    _Writer
+    _TabularWriter
     FixedWidthReader
     FixedWidthWriter
+    _RecordFilter
     FieldFilter
     RangeFilter
  

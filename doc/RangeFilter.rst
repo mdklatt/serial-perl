@@ -10,7 +10,7 @@ NAME
 ****
 
 
-Serial::Core::RangeFilter - filter records using a numerical range
+Serial::Core::RangeFilter - Filter a data field against a numeric range.
 
 
 ********
@@ -22,9 +22,9 @@ SYNOPSIS
 .. code-block:: perl
 
      use Serial::Core;
- 
-     my $filter = new Serial::Core::RangeFilter($field, [$min, $max]);
-     $reader->filter($filter);
+     
+     my $reader = Serial::Core::FixedWidthReader->new($stream, \@fields);
+     $reader->filter(Serial::Core::RangeFilter->new('field', min=>0, max=>5));
 
 
 
@@ -33,67 +33,98 @@ DESCRIPTION
 ***********
 
 
-A \ *RangeFilter*\  is a callback that can be used with the \ ``filter()``\  method of 
-a \ *Reader*\  or \ *Writer*\ . Field values are matched against a numeric range,
-and matching records can be whitelisted or blacklisted.
+A \ **RangeFilter**\  filters a record by matching a data field against the numeric
+range [min, max]. The filter can act as either a whitelist (default) or 
+blacklist to accept or reject any matching records, respectively. The record is 
+not modified. A filter can be attached to readers and writers using their 
+\ ``filter()``\  method.
 
-CLASS METHODS
+
+**************
+PUBLIC METHODS
+**************
+
+
+These methods define the \ **RangeFilter**\  interface.
+
+\ **new()**\ 
 =============
 
 
+Class method that returns a new \ **RangeFilter**\ .
 
-new($field, $range, blacklist => 0)
+Positional Arugments
+--------------------
+
+
+
+\ **$field**\ 
  
- Create a new \ *RangeFilter*\  object.
- 
-
-
-Required Positional Arguments
------------------------------
-
-
-
-\ *field*\ 
- 
- The field name to match.
- 
-
-
-\ *range*\ 
- 
- An arrayref specifying the numerical range [min, max] to match against; if 
- either value is \ ``undef``\  the range is unlimited at that end.
+ The data field name to use with this filter.
  
 
 
 
-Optional Named Arguments
-------------------------
+Named Options
+-------------
 
 
 
-\ *blacklist*\ 
+\ **min=>$min**\ 
  
- Specify if matching records will be whitelisted or blacklisted. Set this to a
- true value to enable blacklisting.
+ Minimum (inclusive) of the range to match; defaults to \ ``undef``\ , in which case
+ the range is unbounded in this direction.
+ 
+
+
+\ **max=>$max**\ 
+ 
+ Maximum (inclusive) of the range to match; defaults to \ ``undef``\ , in which case
+ the range is unbounded in this direction.
+ 
+
+
+\ **blacklist=>$blacklist**\ 
+ 
+ Boolean value to control blacklisting; defaults to false.
  
 
 
 
 
-OBJECT METHODS
-==============
+\ **&{} operator**\ 
+====================
 
 
-The object methods are used by \ *Reader*\ s and \ *Writer*\ s; there is no need to
-access a \ *RangeFilter*\  object directly.
+The class overloads \ **&{}**\  so that it can be used as a subroutine reference.
+This is used by readers and writers and normally does not need to be called in
+user code.
 
 
 
-*******
-EXPORTS
-*******
+********
+SEE ALSO
+********
 
 
-The \ *Serial::Core*\  library makes this class available by default.
+
+`Serial::Core::FieldFilter <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aFieldFilter&mode=module>`_
+
+
+
+`Serial::Core::DelimitedReader <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aDelimitedReader&mode=module>`_
+
+
+
+`Serial::Core::DelimitedWriter <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aDelimitedWriter&mode=module>`_
+
+
+
+`Serial::Core::FixedWidthReader <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aFixedWidthReader&mode=module>`_
+
+
+
+`Serial::Core::FixedWidthWriter <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aFixedWidthWriter&mode=module>`_
+
+
 

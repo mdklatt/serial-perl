@@ -10,7 +10,7 @@ NAME
 ****
 
 
-Serial::Core::FieldFilter - filter records using a set of values
+Serial::Core::FieldFilter - Filter a data field against a set of values.
 
 
 ********
@@ -22,9 +22,10 @@ SYNOPSIS
 .. code-block:: perl
 
      use Serial::Core;
- 
-     my $filter = new Serial::Core::FieldFilter($field, $values);
-     $reader->filter($filter);
+     
+     my @values = ('foo', 'bar');
+     my $reader = Serial::Core::FixedWidthReader->new($stream, \@fields);
+     $reader->filter(Serial::Core::FieldFilter->new('field', \@values));
 
 
 
@@ -33,66 +34,90 @@ DESCRIPTION
 ***********
 
 
-A \ *FieldFilter*\  is a callback that can be used with the \ ``filter()``\  method of 
-a \ *Reader*\  or \ *Writer*\ . Field values are matched against a set of values, and
-matching records can be whitelisted or blacklisted.
+A \ **FieldFilter**\  filters a record by matching a data field against a set of
+values. The filter can act as either a whitelist (default) or blacklist to 
+accept or reject any matching records, respectively. The record is not 
+modified. A filter can be attached to readers and writers using their 
+\ ``filter()``\  method.
 
-CLASS METHODS
+
+**************
+PUBLIC METHODS
+**************
+
+
+These methods define the \ **FieldFilter**\  interface.
+
+\ **new()**\ 
 =============
 
 
+Class method that returns a new \ **FieldFilter**\ .
 
-new($field, $values, blacklist => 0)
+Positional Arugments
+--------------------
+
+
+
+\ **$field**\ 
  
- Create a new \ *FieldFilter*\  object.
- 
-
-
-Required Positional Arguments
------------------------------
-
-
-
-\ *field*\ 
- 
- The field name to match.
+ The data field name to use with this filter.
  
 
 
-\ *value*\ 
+\ **\\@values**\ 
  
- An arrayref specifying the values to match against.
+ An array of values to match against.
  
 
 
 
-Optional Named Arguments
-------------------------
+Named Options
+-------------
 
 
 
-\ *blacklist*\ 
+\ **blacklist=>$blacklist**\ 
  
- Specify if matching records will be whitelisted or blacklisted. Set this to a
- true value to enable blacklisting.
+ Boolean value to control blacklisting; defaults to false.
  
 
 
 
 
-OBJECT METHODS
-==============
+\ **&{} operator**\ 
+====================
 
 
-The object methods are used by \ *Reader*\ s and \ *Writer*\ s; there is no need to
-access a \ *FieldFilter*\  object directly.
+The class overloads \ **&{}**\  so that it can be used as a subroutine reference.
+This is used by readers and writers and normally does not need to be called in
+user code.
 
 
 
-*******
-EXPORTS
-*******
+********
+SEE ALSO
+********
 
 
-The \ *Serial::Core*\  library makes this class available by default.
+
+`Serial::Core::RangeFilter <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aRangeFilter&mode=module>`_
+
+
+
+`Serial::Core::DelimitedReader <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aDelimitedReader&mode=module>`_
+
+
+
+`Serial::Core::DelimitedWriter <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aDelimitedWriter&mode=module>`_
+
+
+
+`Serial::Core::FixedWidthReader <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aFixedWidthReader&mode=module>`_
+
+
+
+`Serial::Core::FixedWidthWriter <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aFixedWidthWriter&mode=module>`_
+
+
 

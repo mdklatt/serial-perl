@@ -108,15 +108,11 @@ Class method that returns a new B<TimeField>.
 
 =over
 
-=item 
-
-B<$name> 
+=item B<$name> 
 
 Used to refer to the field in a data record, e.g. C<%record{$name}>.
 
-=item 
-
-B<$pos | \@pos>
+=item B<$pos | \\@pos>
 
 The position of the field in the input/output line. For delimited data this is 
 the field index (starting at 0), and for fixed-width data this is the substring 
@@ -124,9 +120,7 @@ occupied by the field as given by its offset from 0 and total width (inclusive
 of any spacing between fields). Fixed-width fields are padded on the left or 
 trimmed on the right to fit their allotted width on output.
 
-=item 
-
-B<$fmt>
+=item B<$fmt>
 
 A L<strftime> format string that is used to parse input and format output.
 
@@ -136,9 +130,7 @@ A L<strftime> format string that is used to parse input and format output.
 
 =over
 
-=item 
-
-B<$default>
+=item B<$default>
 
 A value to use for null fields. This is used on input if the field is blank and 
 on output if the field is missing or defined as C<undef>.

@@ -97,15 +97,11 @@ override this to do any class-specific initialization.
 
 =over
 
-=item 
-
-B<$stream>
+=item B<$stream>
 
 A stream handle opened for input.
 
-=item
-
-B<\@fields>
+=item B<\\@fields>
 
 An array of field objects. A field has a name, a position within each line of
 input, and encoding and decoding methods, I<c.f.> L<Serial::Core::ScalarField>. 
@@ -116,9 +112,7 @@ input, and encoding and decoding methods, I<c.f.> L<Serial::Core::ScalarField>.
 
 =over
 
-=item 
-
-B<endl=E<gt>$endl>
+=item B<endl=E<gt>$endl>
 
 Endline character to use when reading input lines; defaults to C<$E<sol>>.
 
@@ -134,9 +128,7 @@ a line of input.
 
 =over
 
-=item
-
-B<$line>
+=item B<$line>
 
 A line of input text.
 

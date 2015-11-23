@@ -101,15 +101,11 @@ Class method that returns a new B<ConstField>.
 
 =over
 
-=item 
-
-B<$name> 
+=item B<$name> 
 
 Used to refer to the field in a data record, e.g. C<%record{$name}>.
 
-=item 
-
-B<$pos | \@pos>
+=item B<$pos | \\@pos>
 
 The position of the field in the input/output line. For delimited data this is 
 the field index (starting at 0), and for fixed-width data this is the substring 
@@ -117,9 +113,7 @@ occupied by the field as given by its offset from 0 and total width (inclusive
 of any spacing between fields). Fixed-width fields are padded on the left or 
 trimmed on the right to fit their allotted width on output.
 
-=item 
-
-B<$value>
+=item B<$value>
 
 The constant value for this field. The field is always assigned this value on 
 input and written as this value on output. 
@@ -130,9 +124,7 @@ input and written as this value on output.
 
 =over
 
-=item 
-
-B<fmt=E<gt>$fmt>
+=item B<fmt=E<gt>$fmt>
 
 A L<sprintf> format string that is used for formatted output (it has no effect
 on input). Specifying a format width is optional, but for fixed-width fields a 
