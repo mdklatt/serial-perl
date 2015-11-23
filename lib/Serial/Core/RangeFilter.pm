@@ -12,9 +12,9 @@ sub _init {
     # Derived classes may override this as necessary.
     # TODO: Change min and max to seperate optional arguments.
     my $self = shift @_;
-    my ($field, $range, %opts) = @_;
+    my ($field, %opts) = @_;
     $self->SUPER::_init($field, %opts);
-    @$self{qw(_min _max)} = @$range;
+    @$self{qw(_min _max)} = @opts{qw(min max)};
     return;
 }
 
@@ -45,9 +45,8 @@ Serial::Core::RangeFilter - Filter a data field against a numeric range.
 
     use Serial::Core;
     
-    my @range = (0, undef);  # all non-negative values
     my $reader = Serial::Core::FixedWidthReader->new($stream, \@fields);
-    $reader->filter(Serial::Core::RangeFilter->new('field', \@range));
+    $reader->filter(Serial::Core::RangeFilter->new('field', min=>0, max=>5));
 
 
 =head1 DESCRIPTION
@@ -89,6 +88,20 @@ range is unlimited in that direction.
 =head3 Named Options
 
 =over
+
+=item 
+
+B<min=E<gt>$min>
+
+Minimum (inclusive) of the range to match; defaults to C<undef>, in which case
+the range is unbounded in this direction.
+
+=item 
+
+B<max=E<gt>$max>
+
+Maximum (inclusive) of the range to match; defaults to C<undef>, in which case
+the range is unbounded in this direction.
 
 =item 
 
