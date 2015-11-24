@@ -1,7 +1,8 @@
 ..  Inforation for implementing derived classes.
 
+###############
 Development API
-===============
+###############
 
 ..  toctree::
     :maxdepth: 2

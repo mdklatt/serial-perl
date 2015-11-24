@@ -1,7 +1,8 @@
 ..  Public API documentation.
 
+##########
 Public API
-==========
+##########
 
 ..  toctree::
     :maxdepth: 2

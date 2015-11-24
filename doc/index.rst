@@ -6,6 +6,7 @@ Serial::Core Documentation
 ..  toctree::
     :maxdepth: 2
 
+    tutorial
     public
     develop
  

@@ -1,11 +1,15 @@
+########
+Tutorial
+########
+
 Overview
 ========
 
 The **Serial::Core** library can be used to read and write serial data
 consisting of sequential records of typed fields. Data is read into or written
 from associative arrays that are keyed by field name. The core library is 
-contained in the `Serial::Core` namespace, and extensions will be contained in
-their own `Serial` namespace.
+contained in the ``Serial::Core`` namespace, and extensions will be contained 
+in their own ``Serial`` namespace.
 
 
 Reading Data
@@ -15,15 +19,19 @@ This is fixed-width data consisting of a station identifier, a date string, a
 time string, and observations from a sensor array. Each observation has a
 floating point value and an optional flag string.
 
+::
+
     340010 2012-02-01 00:00 UTC -999.00M -999.00S
     340010 2012-03-01 00:00 UTC   72.00     1.23A
     340010 2012-04-01 00:10 UTC   63.80Q    0.00
 
-This data stream can be read using a `FixedWidthReader`. The reader must be
+This data stream can be read using a ``FixedWidthReader``. The reader must be
 initialized with an array of field definitions. Each field is associated with
 a data type and defined by its name and position. For a fixed-width field the
 position array is a substring specifier (beg, len), inclusive of any spaces 
 between fields.
+
+..  code-block:: perl
 
     use strict;
     use warnings;
@@ -48,13 +56,16 @@ between fields.
     }
 
 Date/Time Fields
----------------
+----------------
+..  _Time::Piece: http://perldoc.perl.org/Time/Piece.html
+..  _strftime: http://linux.die.net/man/3/strftime
 
-A `TimeField` can be used for converting data to a [`Time::Piece`][1] object. 
-A `TimeField` must be initialized with a [`strftime` format string][2] that
-will be used to parse the input.For the sample data, the date and time fields 
-can be treated as a combined `DateTime` field. 
+A *TimeField* can be used for converting data to a `Time::Piece`_ object. 
+A `TimeField` must be initialized with a `strftime`_ format string that will be
+used to parse the input. For the sample data, the date and time fields can be
+treated as a combined ``DateTime`` field. 
 
+..  code-block:: perl
 
     my @fields = (
         # Ignoring time zone field. 
@@ -74,6 +85,8 @@ it is given the default value assigned to that field (`undef` by default). The
 default value should be appropriate to that type, *e.g.* an `TimeField` field 
 should not have a string as its default value.
 
+..  code-block:: perl
+
     my @fields = (
         # Ignoring time zone field. 
         Serial::Core::ScalarField->new('stid', [0, 6]),
@@ -88,8 +101,8 @@ should not have a string as its default value.
 Writing Data
 ============
 
-Data is written to a stream using a Writer. Writers implement a `write()` 
-method for writing individual records and a `dump()` method for writing a 
+Data is written to a stream using a Writer. Writers implement a ``write()`` 
+method for writing individual records and a ``dump()`` method for writing a 
 sequence of records. Writers use the same field definitions as Readers with
 some additional requirements.
 
@@ -98,6 +111,7 @@ can be used for writing it. In fact, the modified fields can still be used for
 reading the data, so a Reader and a Writer can be defined for a given data
 format using one set of field definitions.
 
+..  code-block:: perl
 
     my @fields = (
         Serial::Core::ScalarField->new('stid', [0, 6]),
@@ -127,11 +141,15 @@ format using one set of field definitions.
 Output Formatting
 -----------------
 
-Each field is formatted for output according to its [format string][4]. For
+..  _format string: http://perldoc.perl.org/functions/sprintf.html
+
+Each field is formatted for output according to its `format string`_. For
 fixed-width output values are fit to the allotted fields widths by padding on
 the left or trimming on the right. By using a format width, values can be
 positioned within the field. Use a format width smaller than the field width to
 specify a left margin between fields.
+
+..  code-block:: perl
 
     my @fields = (
         Serial::Core::ScalarField->new('stid', [0, 6]),
@@ -148,16 +166,18 @@ Default Values
  
 For every output record a Writer will write a value for each defined field. If 
 a field is missing from a record the Writer will use the default value for that
-field (`undef` is encoded as a blank field). Default output values should be 
-type-compatible, *i.e.* don't give a scalar default value to a `TimeField`.
+field (``undef`` is encoded as a blank field). Default output values should be 
+type-compatible, *i.e.* don't give a scalar default value to a ``TimeField``.
 
     
 
 Delimited Data
 ==============
 
-The `DelimitedReader` and `DelimitedWriter` classes can be used for reading and
-writing delimited data, e.g. a CSV file.
+The ``DelimitedReader`` and ``DelimitedWriter`` classes can be used for reading 
+and writing delimited data, e.g. a CSV file.
+
+::
 
     340010,2012-02-01 00:00,UTC,-999.00,M,-999.00,S
     340010,2012-03-01 00:00,UTC,72.00,,1.23,A
@@ -165,6 +185,8 @@ writing delimited data, e.g. a CSV file.
 
 Delimited fields are defined in the same way as fixed-width fields except that
 field positions are given by index (starting at 0). 
+
+..  code-block:: perl
 
     my @fields = (
         Serial::Core::ScalarField->new('stid', 0),
@@ -189,7 +211,9 @@ Filters
 Filters are used to manipulate data records after they have been parsed by a
 Reader or before they are written by a Writer. A filter is any function, class
 method, or callable object that takes a data record as its only argument and 
-returns a data record or `undef` to reject the record.
+returns a data record or ``undef`` to reject the record.
+
+..  code-block:: perl
 
     my $month_filter = sub {
         $ Filter function to restrict data to records from March.
@@ -211,8 +235,10 @@ returns a data record or `undef` to reject the record.
 Advanced Filtering
 ------------------
 
-Any callable object can be a filter, including a class that overloads the `&{}`
-operator.
+Any callable object can be a filter, including a class that overloads the 
+``&{}`` operator.
+
+..  code-block:: perl
 
     package MonthFilter;
     
@@ -246,6 +272,8 @@ Modifying Records
 A filter can return a modified version of its input record or a different
 record altogether.
 
+..  code-block:: perl
+
     my $OFFSET = -360;  # CST
     my $local_time = sub {
         # Convert timestamp from UTC to local time.
@@ -261,9 +289,11 @@ Multple Filters
 ---------------
 
 Filters can be chained and are called in order for each record. If any filter
-returns `undef` the record is immediately dropped. For the best performance 
-filters should be ordered from most restrictive (most likely to return `undef`) 
+returns ``undef`` the record is immediately dropped. For the best performance 
+filters should be ordered from most exclusive (most likely to return ``undef``) 
 to least.
+
+..  code-block:: perl
 
     $reader->filter(MonthFilter->new(3));
     $reader->filter($local_time);
@@ -273,7 +303,9 @@ to least.
 Predefined Filters
 ------------------
 
-The library includes some filter classes, such as `FieldFilter`.
+The library includes some filter classes, such as ``FieldFilter``.
+
+..  code-block:: perl
 
     # Only accept records where the color field is crimson or cream.
     my @colors = ('crimson', 'cream');
@@ -290,8 +322,10 @@ Tips and Tricks
 Quoted Strings
 --------------
 
-The `ScalarField` type can read and write quoted values by initializing it with
-the quote character to use.
+The ``ScalarField`` type can read and write quoted values by initializing it 
+with the quote character to use.
+
+..  code-block:: perl
 
     Serial::Core::ScalarField->new('name', 0, quote=>'"');  # double-quoted
 
@@ -299,9 +333,11 @@ Nonstandard Line Endings
 ------------------------
 
 By default, lines of text are assumed to end with the platform-specific line
-ending, i.e. `$/`. Readers expect that ending on each line of text from their
+ending, i.e. ``$/``. Readers expect that ending on each line of text from their
 input stream, and writers append it to each line written to their output
-stream.  If a different ending is required use use the `endl` option.
+stream.  If a different ending is required use use the ``endl`` option.
+
+..  code-block:: perl
 
     my $ENDL = "\r\r";  // Windows
     my $writer = Serial::Core::FixedWidthWriter->new($stream, \@fields, endl=>$ENDL);
@@ -311,13 +347,15 @@ Header Data
 
 Header data is outside the scope of this library. Client code is responsible
 for reading or writing header data from or to the stream before the first
-line is read or written. This is typically done by the `_init()` method.
+line is read or written. This is typically done by the ``_init()`` method.
 
 Combined Fields
 ---------------
 
 Filters can be used to map a single field in the input/output stream to/from
 multiple fields in the data record, or *vice versa*.
+
+..  code-block:: perl
 
     sub timestamp_filter {
         # Combine separate 'date' and 'time' fields into a 'timestamp' field.
@@ -327,9 +365,3 @@ multiple fields in the data record, or *vice versa*.
         $record->{'timestamp'} = "${date}T${time}".
         return $record;
     }
-
-
-<!-- REFERENCES -->
-[1]: http://perldoc.perl.org/Time/Piece.html "Time::Piece library"
-[2]: http://linux.die.net/man/3/strftime "strftime function"
-[3]: http://perldoc.perl.org/functions/sprintf.html "format strings"
