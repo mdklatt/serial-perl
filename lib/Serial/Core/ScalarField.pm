@@ -29,7 +29,9 @@ sub decode {
 sub encode {
     my $self = shift @_;
     my ($value) = @_;
-    $value ||= $self->{_default} || '';
+    if (!defined($value) or $value eq '') {
+        $value = $self->{_default} || '';
+    }
     if ($self->{_valfmt}) {
         $value = sprintf($self->{_valfmt}, $value);
     }

@@ -17,9 +17,9 @@ our $fields = [
     Serial::Core::ScalarField->new('int', 1)
 ];
 our @records = (
-    {str => 'a', int => 1}, 
-    {str => 'b', int => 2}, 
-    {str => 'c', int => 3},
+    {str => 'a', int => 0}, 
+    {str => 'b', int => 1}, 
+    {str => 'c', int => 2},
 );
 
 
@@ -29,15 +29,15 @@ our @records = (
     open my $stream, '>', \$buffer;
     my $writer = Serial::Core::DelimitedWriter->new($stream, $fields);
     $writer->write($records[0]);
-    is($buffer, "a\t1\n", 'writer');
+    is($buffer, "a\t0\n", 'writer');
     seek $stream, 0, SEEK_SET;
     $writer = Serial::Core::DelimitedWriter->new($stream, $fields, delim => ',');
     $writer->write($records[0]);
-    is($buffer, "a,1\n", 'writer: delim');
+    is($buffer, "a,0\n", 'writer: delim');
     seek $stream, 0, SEEK_SET;
     $writer = Serial::Core::DelimitedWriter->new($stream, $fields, endl => 'X');
     $writer->write($records[0]);
-    is($buffer, "a\t1X", 'writer: endl');
+    is($buffer, "a\t0X", 'writer: endl');
 }
 
 
@@ -47,7 +47,7 @@ our @records = (
     open my $stream, '>', \$buffer;
     my $writer = Serial::Core::DelimitedWriter->new($stream, $fields);
     $writer->dump(\@records);
-    is($buffer, "a\t1\nb\t2\nc\t3\n", 'dump');
+    is($buffer, "a\t0\nb\t1\nc\t2\n", 'dump');
 }
 
 
@@ -67,5 +67,5 @@ our @records = (
     my $writer = Serial::Core::DelimitedWriter->new($stream, $fields);
     $writer->filter($reject, $modify);
     $writer->dump(\@records);
-    is($buffer, "b\t4\nc\t6\n", 'filter');
+    is($buffer, "b\t2\nc\t4\n", 'filter');
 }
