@@ -205,6 +205,39 @@ field positions are given by index (starting at 0).
     $writer = Serial::Core::DelimitedWriter->new($ostream, \@fields, $delim);
 
 
+Initializing Readers and Writers
+================================
+
+For most situations, calling a class's ``open()`` method is the most convenient
+way to create a Reader or Writer. This creates an object that will close its
+underlying stream automatically when it goes out of scope. If a string is 
+passed to ``open()`` it is interpreted as a path to be opened as a plain text 
+file. If another type of stream is needed, open the stream explicitly and pass 
+it to ``open()`` instead.
+
+..  code-block:: perl
+
+    {
+        # The input stream is closed when $reader is destroyed at the end of
+        # this lexical scope.
+        my $reader = Serial::Core::DelmitedReader->open('data.csv', \@fields, ',');
+        my @records = $reader->read();
+    }
+
+Calling a Reader's or Writer's ``new()`` method provides the most control. The
+client code is responsible for opening and closing the associated stream. This
+method takes the same arguments as ``open()``, except the first argument must
+be an open stream handle.
+
+
+..  code-block:: perl
+
+    open my $stream, '<', 'data.csv';
+    my $reader = Serial::Core::DelimitedReader->new($stream, \@fields, ',');
+    my @records = $reader->read();
+    close $stream;
+
+
 Filters
 =======
 
