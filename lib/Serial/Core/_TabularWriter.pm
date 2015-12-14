@@ -11,9 +11,11 @@ sub open {
     # Create a writer with automatic stream handling.
     my $class = shift @_;
     my $stream = shift @_;
-    if (ref($stream) eq 'SCALAR') {
+    if (not ref($stream)) {
         # Assume this is a file path to open.
-        open $stream, '>', $stream;
+        my $path = $stream;
+        undef $stream;
+        open $stream, '>', $path;
     }
     my $writer = $class->new($stream, @_);
     $writer->{_closing} = 1;

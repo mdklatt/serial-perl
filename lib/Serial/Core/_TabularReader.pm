@@ -9,9 +9,11 @@ sub open {
     # Create a reader with automatic stream handling.
     my $class = shift @_;
     my $stream = shift @_;
-    if (ref($stream) eq 'SCALAR') {
+    if (not ref($stream)) {
         # Assume this is a file path to open.
-        open $stream, '<', $stream;
+        my $path = $stream;
+        undef $stream;
+        open $stream, '<', $path;
     }
     my $reader = $class->new($stream, @_);
     $reader->{_closing} = 1;
