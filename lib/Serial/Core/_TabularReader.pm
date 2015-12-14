@@ -5,16 +5,33 @@ use strict;
 use warnings;
 
 
+sub open {
+    # Create a reader with automatic stream handling.
+    my $class = shift @_;
+    my $stream = shift @_;
+    if (ref($stream) eq 'SCALAR') {
+        # Assume this is a file path to open.
+        open $stream, '<', $stream;
+    }
+    my $reader = $class->new($stream, @_);
+    $reader->{_closing} = 1;
+    return $reader; 
+}
+
+
 sub _init {
+    # This is called by new() to initialize the object.
     my $self = shift @_;
     $self->SUPER::_init();
     ($self->{_stream}, $self->{_fields}, my %opts) = @_;
     $self->{_endl} = $opts{endl} || $/;
+    $self->{_closing} = 0;
     return;
 }
 
 
 sub _get {
+    # Return the next parsed record from the stream.
     my $self = shift @_;
     local $/ = $self->{_endl};
     my $stream = $self->{_stream};  # dereference the file handle
@@ -35,6 +52,16 @@ sub _split {
     # text as its argument and return an arrayref of tokens.
     die "abstract method not implemented";
 }
+
+
+sub DESTROY {
+    my $self = shift @_;
+    if ($self->{_closing} && $self->{_stream}) {
+        # This object has responsibility for closing the underlying stream.
+        close $self->{_stream};
+    }
+}
+
 
 1;
 
@@ -81,7 +108,30 @@ implement a B<_split()> method (see L</PRIVATE METHODS>).
 
 =head1 PUBLIC METHODS
 
-All public methods are inherited from L<Serial::Core::_Reader>.
+The public interface includes these methods in addition to the ones inherited
+from B<_Reader>.
+
+=head2 B<open()>
+
+Create a new reader with automatic stream handling. Unlike a reader created
+with B<new()>, the returned object will automatically close its input stream
+when it goes out of scope.
+
+=head3 Positional Arguments
+
+Any additional arguments beyond the ones listed here are passed directly to
+the class-specific B<new()> method.
+
+=over
+
+=item B<$stream>
+
+This is either an open stream handle or a path to open as a normal text file.
+In either case, the resulting stream will be closed when the reader object goes
+out of scope. The open stream is passed as the first argument to the class's
+B<new()> method.
+
+=back
 
 
 =head1 PRIVATE METHODS

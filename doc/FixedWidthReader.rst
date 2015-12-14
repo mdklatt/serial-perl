@@ -23,7 +23,7 @@ SYNOPSIS
 
      use Serial::Core;
      
-     my $reader = Serial::Core::FixedWidthReader->new($stream, \@fields);
+     my $reader = Serial::Core::FixedWidthReader->open($path \@fields);
      
      $reader->filter(sub {
          my ($record) = @_;
@@ -89,6 +89,36 @@ Named Options
 \ **endl => $endl**\ 
  
  Endline character to use when reading input lines; defaults to \ ``$sol``\ .
+ 
+
+
+
+
+\ **open()**\ 
+==============
+
+
+Class method that returns a new \ **FixedWidthReader**\  with automatic stream 
+handling. Unlike a reader created with \ **new()**\ , the returned object will 
+automatically close its input stream when it goes out of scope.
+
+Positional Arguments
+--------------------
+
+
+
+\ **$stream**\ 
+ 
+ This is either an open stream handle or a path to open as a normal text file.
+ In either case, the resulting stream will be closed when the reader object goes
+ out of scope.
+ 
+
+
+\ **\\@fields**\ 
+ 
+ An array of field objects. A field has a name, a position within each line of
+ input, and encoding and decoding methods, \ *c.f.*\  `Serial::Core::ScalarField <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aScalarField&mode=module>`_.
  
 
 

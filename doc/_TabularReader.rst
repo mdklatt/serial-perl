@@ -57,7 +57,35 @@ PUBLIC METHODS
 **************
 
 
-All public methods are inherited from `Serial::Core::_Reader <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3a_Reader&mode=module>`_.
+The public interface includes these methods in addition to the ones inherited
+from \ **_Reader**\ .
+
+\ **open()**\ 
+==============
+
+
+Create a new reader with automatic stream handling. Unlike a reader created
+with \ **new()**\ , the returned object will automatically close its input stream
+when it goes out of scope.
+
+Positional Arguments
+--------------------
+
+
+Any additional arguments beyond the ones listed here are passed directly to
+the class-specific \ **new()**\  method.
+
+
+\ **$stream**\ 
+ 
+ This is either an open stream handle or a path to open as a normal text file.
+ In either case, the resulting stream will be closed when the reader object goes
+ out of scope. The open stream is passed as the first argument to the class's
+ \ **new()**\  method.
+ 
+
+
+
 
 
 ***************

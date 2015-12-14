@@ -6,6 +6,7 @@ use warnings;
 
 
 sub _init {
+    # This is called by new() to initialize the object.
     my $self = shift @_;
     my ($stream, $fields, %opts) = @_;
     $self->SUPER::_init($stream, $fields, %opts);
@@ -15,6 +16,7 @@ sub _init {
 
 
 sub _split {
+    # Split a line of text into an array of tokens.
     my $self = shift @_;
     my ($line) = @_;
     my @tokens;
@@ -47,7 +49,7 @@ Serial::Core::DelimitedReader - Read character-delimited tabular data.
 
     use Serial::Core;
     
-    my $reader = Serial::Core::DelimitedReader->new($stream, \@fields);
+    my $reader = Serial::Core::DelimitedReader->open($path, \@fields);
     
     $reader->filter(sub {
         my ($record) = @_;
@@ -103,6 +105,29 @@ Field delimiter to use; the default is to split lines on any whitespace.
 =item B<endl=E<gt>$endl>
 
 Endline character to use when reading input lines; defaults to C<$E<sol>>.
+
+=back
+
+=head2 B<open()>
+
+Class method that returns a new B<DelimitedReader> with automatic stream 
+handling. Unlike a reader created with B<new()>, the returned object will 
+automatically close its input stream when it goes out of scope.
+
+=head3 Positional Arguments
+
+=over
+
+=item B<$stream>
+
+This is either an open stream handle or a path to open as a normal text file.
+In either case, the resulting stream will be closed when the reader object goes
+out of scope.
+
+=item B<\\@fields>
+
+An array of field objects. A field has a name, a position within each line of
+input, and encoding and decoding methods, I<c.f.> L<Serial::Core::ScalarField>. 
 
 =back
 
