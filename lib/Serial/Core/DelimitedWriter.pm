@@ -1,30 +1,22 @@
-# A writer for tabular data consisting of character-delimited fields.
-#
-# The position of each scalar field is given as an integer index, and the
-# position of an array field is a [beg, len] array where the end is undef for
-# a variable-length array.
-#
 package Serial::Core::DelimitedWriter;
 use base qw(Serial::Core::_TabularWriter);
 
 use strict;
 use warnings;
 
-# Initialize this object.
-#
-# If no delimiter is specified each ouput line is tab-delimited.
-#
+
 sub _init {
+    # This is called by new() to initialize the object.
     my $self = shift @_;
     my ($stream, $fields, %opts) = @_;
     $self->SUPER::_init($stream, $fields, %opts);
-    $self->{_delim} = $opts{delim} || "\t";
+    $self->{_delim} = $opts{delim} || "\t";  # default to tab-delimited input
     return;
 }
 
-# Join an array of tokens into a line of text.
-#
+
 sub _join {
+    # Join an array of tokens into a line of text.
     my $self = shift @_;
     my ($tokens) = @_;
     return join $self->{_delim}, @$tokens;
@@ -49,7 +41,7 @@ Serial::Core::DelimitedWriter - Write character-delimited tabular data.
 
     use Serial::Core;
 
-    my $writer = Serial::Core::DelimitedWriter->new($stream, \@fields, $endl);
+    my $writer = Serial::Core::DelimitedWriter->open($path, \@fields, $endl);
 
     $writer->filter(sub {
         my ($record) = @_;
@@ -103,6 +95,29 @@ Field delimiter to use.
 =item B<endl=E<gt>$endl>
 
 Endline character to use when writing output lines; defaults to C<$E<sol>>.
+
+=back
+
+=head2 B<open()>
+
+Class method that returns a new B<DelimitedWriter> with automatic stream 
+handling. Unlike a writer created with B<new()>, the returned object will 
+automatically close its input stream when it goes out of scope.
+
+=head3 Positional Arguments
+
+=over
+
+=item B<$stream>
+
+This is either an open stream handle or a path to open as a normal text file.
+In either case, the resulting stream will be closed when the reader object goes
+out of scope.
+
+=item B<\\@fields>
+
+An array of field objects. A field has a name, a position within each line of
+input, and encoding and decoding methods, I<c.f.> L<Serial::Core::ScalarField>. 
 
 =back
 

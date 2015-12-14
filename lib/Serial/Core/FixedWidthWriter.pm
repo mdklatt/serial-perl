@@ -1,21 +1,17 @@
-# A writer for tabular data consisting of fixed-width fields.
-#
-#
 package Serial::Core::FixedWidthWriter;
 use base qw(Serial::Core::_TabularWriter);
 
 use strict;
 use warnings;
 
-# Join an array of tokens into a line of text.
-#
+
 sub _join {
-    # In this implementation the field positions don't matter; tokens must be
-    # in the correct order, and tokens must be the correct width for that 
-    #  field.
+    # Join an array of tokens into a line of text. In this implementation the 
+    # field positions don't matter; tokens must be in the correct order, and 
+    # tokens must be the correct width for that field.
     my $self = shift @_;
     my ($tokens) = @_;
-    return join '', @{$tokens};
+    return join '', @$tokens;
 }
 
 1;
@@ -36,7 +32,7 @@ Serial::Core::FixedWidthWriter - Write fixed-width tabular data.
 
     use Serial::Core;
     
-    my $writer = Serial::Core::FixedWidthWriter->new($stream, \@fields);
+    my $writer = Serial::Core::FixedWidthWriter->open($path, \@fields);
     
     $writer->filter(sub {
         my ($record) = @_;
@@ -86,6 +82,29 @@ input, and encoding and decoding methods, I<c.f.> L<Serial::Core::ScalarField>.
 =item B<endl =E<gt> $endl>
 
 Endline character to use when writing output lines; defaults to C<$E<sol>>.
+
+=back
+
+=head2 B<open()>
+
+Class method that returns a new B<FixedWidthWriter> with automatic stream 
+handling. Unlike a writer created with B<new()>, the returned object will 
+automatically close its input stream when it goes out of scope.
+
+=head3 Positional Arguments
+
+=over
+
+=item B<$stream>
+
+This is either an open stream handle or a path to open as a normal text file.
+In either case, the resulting stream will be closed when the reader object goes
+out of scope.
+
+=item B<\\@fields>
+
+An array of field objects. A field has a name, a position within each line of
+input, and encoding and decoding methods, I<c.f.> L<Serial::Core::ScalarField>. 
 
 =back
 

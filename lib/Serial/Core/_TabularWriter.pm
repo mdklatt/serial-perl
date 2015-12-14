@@ -7,11 +7,26 @@ use warnings;
 use Carp qw(croak);
 
 
+sub open {
+    # Create a writer with automatic stream handling.
+    my $class = shift @_;
+    my $stream = shift @_;
+    if (ref($stream) eq 'SCALAR') {
+        # Assume this is a file path to open.
+        open $stream, '>', $stream;
+    }
+    my $writer = $class->new($stream, @_);
+    $writer->{_closing} = 1;
+    return $writer; 
+}
+
+
 sub _init {
     my $self = shift @_;
     $self->SUPER::_init();
     ($self->{_stream}, $self->{_fields}, my %opts) = @_;
     $self->{_endl} = $opts{endl} || $/;  # default to system newline
+    $self->{_closing} = 0;
     return;
 }
 
@@ -33,6 +48,15 @@ sub _put {
 sub _join {
     # This must be implemented by child classes to return a line of text.
     croak "abstract method not implemented";
+}
+
+
+sub DESTROY {
+    my $self = shift @_;
+    if ($self->{_closing} && $self->{_stream}) {
+        # This object has responsibility for closing the underlying stream.
+        close $self->{_stream};
+    }
 }
 
 

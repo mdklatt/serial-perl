@@ -23,7 +23,7 @@ SYNOPSIS
 
      use Serial::Core;
      
-     my $writer = Serial::Core::FixedWidthWriter->new($stream, \@fields);
+     my $writer = Serial::Core::FixedWidthWriter->open($path, \@fields);
      
      $writer->filter(sub {
          my ($record) = @_;
@@ -87,6 +87,36 @@ Named Options
 \ **endl => $endl**\ 
  
  Endline character to use when writing output lines; defaults to \ ``$sol``\ .
+ 
+
+
+
+
+\ **open()**\ 
+==============
+
+
+Class method that returns a new \ **FixedWidthWriter**\  with automatic stream 
+handling. Unlike a writer created with \ **new()**\ , the returned object will 
+automatically close its input stream when it goes out of scope.
+
+Positional Arguments
+--------------------
+
+
+
+\ **$stream**\ 
+ 
+ This is either an open stream handle or a path to open as a normal text file.
+ In either case, the resulting stream will be closed when the reader object goes
+ out of scope.
+ 
+
+
+\ **\\@fields**\ 
+ 
+ An array of field objects. A field has a name, a position within each line of
+ input, and encoding and decoding methods, \ *c.f.*\  `Serial::Core::ScalarField <http://search.cpan.org/search?query=Serial%3a%3aCore%3a%3aScalarField&mode=module>`_.
  
 
 
