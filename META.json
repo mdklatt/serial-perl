@@ -4,7 +4,7 @@
       "Michael Klatt <mdklatt@ou.edu>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Module::Build version 0.4003, CPAN::Meta::Converter version 2.150005",
+   "generated_by" : "Michael Klatt",
    "license" : [
       "perl_5"
    ],
@@ -14,9 +14,8 @@
    },
    "name" : "Serial-Core",
    "prereqs" : {
-      "configure" : {
-         "requires" : {
-            "Module::Build" : "0.06",
+      "develop" : {
+         "suggests" : {
             "Pod::POM::View::Restructured" : "0"
          }
       }
@@ -28,5 +27,4 @@
       ]
    },
    "version" : "0.002001_001",
-   "x_serialization_backend" : "JSON::PP version 2.27300"
 }
