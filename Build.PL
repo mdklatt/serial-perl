@@ -46,16 +46,15 @@ my $class = Module::Build->subclass(code => q(
 my $builder = $class->new(
     module_name         => 'Serial::Core',
     license             => 'perl',
-    dist_author         => q(Michael Klatt <mdklatt@ou.edu>),
+    dist_author         => q(Michael Klatt <mdklatt@alumni.ou.edu>),
     dist_version_from   => 'lib/Serial/Core.pm',
-    release_status      => 'unstable',
-    configure_requires => {
+    release_status      => 'testing',
+    configure_requires  => {
         'Module::Build' => 0.06,  # need subclass() method
-        'Pod::POM' => 0,
+        'Pod::POM'      => 0,
         'Pod::POM::View::Restructured' => 0,
     },
-    add_to_cleanup     => ['_build/', 'blib/', 'MYMETA.*', 'Serial-Core-*'],
-    create_makefile_pl => 'small',
+    add_to_cleanup      => ['_build/', 'blib/', 'MYMETA.*', 'Serial-Core-*'],
 );
 
 
