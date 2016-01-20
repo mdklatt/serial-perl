@@ -16,5 +16,4 @@ my $builder = Module::Build->new(
     add_to_cleanup      => ['_build/', 'blib/', 'MYMETA.*', 'Serial-Core-*'],
 );
 
-
 $builder->create_build_script();
