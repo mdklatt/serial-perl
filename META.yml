@@ -14,5 +14,5 @@ meta-spec:
 name: Serial-Core
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.002002_001
+version: 0.002003_000
 x_serialization_backend: 'CPAN::Meta::YAML version 0.016'
